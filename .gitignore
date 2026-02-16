@@ -1,0 +1,11 @@
+dist/
+dist-*/
+coverage/
+node_modules/
+
+*.md
+!README.md
+
+package-lock.json
+
+*.ps1

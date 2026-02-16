@@ -1,0 +1,209 @@
+.simple-date-picker {
+  position: relative;
+}
+
+.date-picker-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 500;
+  min-width: 240px;
+}
+
+.date-picker-trigger:hover {
+  background: #fafafa;
+  border-color: #d1d5db;
+}
+
+.date-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.date-picker-popup {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+}
+
+/* Override react-day-picker styles for minimalist theme */
+.date-picker-popup .rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: #1f2937;
+  --rdp-background-color: #f3f4f6;
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.date-picker-popup .rdp-months {
+  justify-content: center;
+}
+
+.date-picker-popup .rdp-month {
+  margin: 0;
+}
+
+.date-picker-popup .rdp-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0 16px 0;
+}
+
+.date-picker-popup .rdp-caption_label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.date-picker-popup .rdp-nav {
+  position: absolute;
+  top: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.date-picker-popup .rdp-nav_button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.date-picker-popup .rdp-nav_button:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.date-picker-popup .rdp-nav_button_previous {
+  left: 0;
+}
+
+.date-picker-popup .rdp-nav_button_next {
+  right: 0;
+}
+
+.date-picker-popup .rdp-head_cell {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  padding: 8px 0;
+}
+
+.date-picker-popup .rdp-cell {
+  padding: 1px;
+}
+
+.date-picker-popup .rdp-day {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 400;
+}
+
+.date-picker-popup
+  .rdp-day:hover:not(.rdp-day_selected):not(.rdp-day_selected-week) {
+  background: #f3f4f6;
+}
+
+.date-picker-popup .rdp-day_selected {
+  background: #1f2937 !important;
+  color: white !important;
+  font-weight: 500;
+}
+
+.date-picker-popup
+  .rdp-day_today:not(.rdp-day_selected):not(.rdp-day_selected-week) {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.date-picker-popup .rdp-day_outside {
+  color: #d1d5db;
+  opacity: 0.5;
+}
+
+.date-picker-popup .rdp-day_disabled {
+  color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.date-picker-popup .rdp-day_disabled:hover {
+  background: transparent;
+}
+
+/* Week selection styles */
+.date-picker-popup .rdp-day_selected-week {
+  background: #1f2937 !important;
+  color: white !important;
+  font-weight: 500;
+  border-radius: 0;
+}
+
+.date-picker-popup .rdp-day_selected-week:first-child,
+.date-picker-popup tr .rdp-day_selected-week:nth-child(2) {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.date-picker-popup .rdp-day_selected-week:last-child,
+.date-picker-popup tr .rdp-day_selected-week:nth-child(8) {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.date-picker-popup .rdp-day_hovered-week {
+  background: #f3f4f6 !important;
+  color: #1f2937 !important;
+  border-radius: 0;
+}
+
+.date-picker-popup .rdp-day_hovered-week:first-child,
+.date-picker-popup tr .rdp-day_hovered-week:nth-child(2) {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.date-picker-popup .rdp-day_hovered-week:last-child,
+.date-picker-popup tr .rdp-day_hovered-week:nth-child(8) {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.date-picker-popup .rdp-day_disabled:hover {
+  background: transparent;
+}

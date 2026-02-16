@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "Better Zeus",
+  "author": "Axel Thauvin",
+  "version": "1.0",
+  "description": "Améliore l'interface de Zeus avec un calendrier interactif pour votre emploi du temps.",
+  "permissions": ["https://unpkg.com/*"],
+  "content_security_policy": "script-src 'self' https://unpkg.com; object-src 'self'",
+  "content_scripts": [
+    {
+      "matches": ["https://zeus.ionis-it.com/home*"],
+      "js": ["src/content/zeus-calendar.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "icons": {
+    "16": "src/icons/favicon-16x16.png",
+    "48": "src/icons/favicon-48x48.png",
+    "128": "src/icons/favicon-128x128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{49535a80-9542-4a02-856c-4fb572c30f35}",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "license": "MIT"
+}
