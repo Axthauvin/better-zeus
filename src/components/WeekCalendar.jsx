@@ -194,25 +194,8 @@ const WeekCalendar = ({
     }
   };
 
-  const handleArrowKeyDown = (e) => {
-    console.log("Key pressed:", e.key);
-    let newDate;
-    if (e.key === "ArrowLeft") {
-      newDate = subWeeks(currentDate, 1);
-    } else if (e.key === "ArrowRight") {
-      newDate = addWeeks(currentDate, 1);
-    }
-    if (newDate) {
-      setCurrentDate(newDate);
-      const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
-      const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
-      onDateChange(newDate, start, end);
-      setHoveredWeek({ from: start, to: end });
-    }
-  };
-
   return (
-    <div className="week-calendar" onKeyDown={handleArrowKeyDown} tabIndex={0}>
+    <div className="week-calendar">
       {/* Header */}
       <div className="calendar-header">
         <div className="calendar-header-left">

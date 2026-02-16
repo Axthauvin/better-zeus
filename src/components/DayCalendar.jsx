@@ -26,7 +26,10 @@ const DayCalendar = ({
 
   const startsAt = 6;
   const endsAt = 22;
-  const hours = Array.from({ length: endsAt - startsAt + 1 }, (_, i) => i + startsAt);
+  const hours = Array.from(
+    { length: endsAt - startsAt + 1 },
+    (_, i) => i + startsAt,
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {

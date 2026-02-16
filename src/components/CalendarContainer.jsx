@@ -10,7 +10,14 @@ import {
   getSavedView,
   saveView,
 } from "../api";
-import { startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfDay,
+  endOfDay,
+  addWeeks,
+  subWeeks,
+} from "date-fns";
 import { fr } from "date-fns/locale";
 
 const CalendarContainer = () => {
@@ -20,6 +27,23 @@ const CalendarContainer = () => {
   const [error, setError] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedGroups, setSelectedGroups] = useState(getSavedGroups() || []);
+
+  const handleArrowKeyDown = (e) => {
+    console.log("Key pressed:", e.key);
+    let newDate;
+    if (e.key === "ArrowLeft") {
+      newDate = subWeeks(currentDate, 1);
+    } else if (e.key === "ArrowRight") {
+      newDate = addWeeks(currentDate, 1);
+    }
+    if (newDate) {
+      setCurrentDate(newDate);
+      const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+      const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+      loadEvents(start, end, selectedGroups);
+      setHoveredWeek({ from: start, to: end });
+    }
+  };
 
   // Fetch events from API
   const loadEvents = async (startDate, endDate, groups) => {
@@ -98,7 +122,11 @@ const CalendarContainer = () => {
   }
 
   return (
-    <div style={{ display: "flex", height: "100%" }}>
+    <div
+      style={{ display: "flex", height: "100%" }}
+      onKeyDown={handleArrowKeyDown}
+      tabIndex={0}
+    >
       <GroupSelector
         selectedGroups={selectedGroups}
         onGroupsChange={handleGroupsChange}
