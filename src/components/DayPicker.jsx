@@ -110,6 +110,29 @@ export function MyDayPicker({ value, onChange, locale, mode = "single" }) {
   };
 
   const formatDisplayDate = () => {
+    // check if its the actual date / week and display "Today" / "This week" instead of the date
+
+    if (mode === "day" && value) {
+      const today = new Date();
+      if (format(value, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")) {
+        return translate("Today", locale.code);
+      }
+    }
+
+    if (mode === "week" && value) {
+      const today = new Date();
+      const currentWeek = getWeekRange(today);
+      const selectedWeek = getWeekRange(value);
+      if (
+        format(currentWeek.from, "yyyy-MM-dd") ===
+          format(selectedWeek.from, "yyyy-MM-dd") &&
+        format(currentWeek.to, "yyyy-MM-dd") ===
+          format(selectedWeek.to, "yyyy-MM-dd")
+      ) {
+        return translate("This week", locale.code);
+      }
+    }
+
     if (mode === "week" && value) {
       const weekRange = getWeekRange(value);
       return `${format(weekRange.from, "d MMM", { locale })} - ${format(weekRange.to, "d MMM yyyy", { locale })}`;

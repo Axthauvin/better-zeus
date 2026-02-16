@@ -24,7 +24,9 @@ const DayCalendar = ({
   const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const startsAt = 6;
+  const endsAt = 22;
+  const hours = Array.from({ length: endsAt - startsAt + 1 }, (_, i) => i + startsAt);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -62,7 +64,11 @@ const DayCalendar = ({
   };
 
   const getEventsForDay = () => {
-    return events.filter((event) => isSameDay(event.start, currentDate));
+    return events.filter((event) => {
+      if (!isSameDay(event.start, currentDate)) return false;
+      const eventStartHour = event.start.getHours();
+      return eventStartHour >= startsAt;
+    });
   };
 
   const getEventPosition = (event) => {
@@ -71,7 +77,7 @@ const DayCalendar = ({
     const endHour = event.end.getHours();
     const endMinute = event.end.getMinutes();
 
-    const top = (startHour + startMinute / 60) * 50; // 50px per hour for day view
+    const top = (startHour - startsAt + startMinute / 60) * 50; // 50px per hour for day view
     const duration =
       (endHour + endMinute / 60 - (startHour + startMinute / 60)) * 50;
 
@@ -81,7 +87,7 @@ const DayCalendar = ({
   const getCurrentTimePosition = () => {
     const hour = currentTime.getHours();
     const minute = currentTime.getMinutes();
-    return (hour + minute / 60) * 50;
+    return (hour - startsAt + minute / 60) * 50;
   };
 
   const isToday = () => isSameDay(currentDate, new Date());
@@ -243,15 +249,13 @@ const DayCalendar = ({
           <div className="time-header"></div>
           {hours.map((hour) => (
             <div key={hour} className="time-slot-day">
-              {hour > 0 && (
-                <span className="time-label">
-                  {hour === 12
-                    ? "12 PM"
-                    : hour > 12
-                      ? `${hour - 12} PM`
-                      : `${hour} AM`}
-                </span>
-              )}
+              <span className="time-label">
+                {hour === 12
+                  ? "12 PM"
+                  : hour > 12
+                    ? `${hour - 12} PM`
+                    : `${hour} AM`}
+              </span>
             </div>
           ))}
         </div>
@@ -265,15 +269,17 @@ const DayCalendar = ({
             ))}
 
             {/* Current time indicator */}
-            {isToday() && (
-              <div
-                className="current-time-indicator"
-                style={{ top: `${getCurrentTimePosition()}px` }}
-              >
-                <div className="current-time-dot"></div>
-                <div className="current-time-line"></div>
-              </div>
-            )}
+            {isToday() &&
+              currentTime.getHours() >= startsAt &&
+              currentTime.getHours() <= endsAt && (
+                <div
+                  className="current-time-indicator"
+                  style={{ top: `${getCurrentTimePosition()}px` }}
+                >
+                  <div className="current-time-dot"></div>
+                  <div className="current-time-line"></div>
+                </div>
+              )}
 
             {/* Events */}
             <div className="events-container-day">

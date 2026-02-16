@@ -31,7 +31,14 @@ const WeekCalendar = ({
   const weekEnd = endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const hourType = "academic"; // "solar" or "academic"
+  const startsAt = 6; // 6 AM
+  const endsAt = 22; // 10 PM
+
+  const hours = Array.from(
+    { length: endsAt - startsAt + 1 },
+    (_, i) => i + startsAt,
+  );
 
   const uniqueEvents = Array.from(new Set(events.map((e) => e.id))).map((id) =>
     events.find((e) => e.id === id),
@@ -72,7 +79,11 @@ const WeekCalendar = ({
   };
 
   const getEventsForDay = (day) => {
-    return uniqueEvents.filter((event) => isSameDay(event.start, day));
+    return uniqueEvents.filter((event) => {
+      const isEventOnDay = isSameDay(event.start, day);
+      const eventStartHour = event.start.getHours();
+      return isEventOnDay && eventStartHour >= startsAt;
+    });
   };
 
   const getEventPosition = (event) => {
@@ -81,7 +92,7 @@ const WeekCalendar = ({
     const endHour = event.end.getHours();
     const endMinute = event.end.getMinutes();
 
-    const top = (startHour + startMinute / 60) * 40; // 40px per hour
+    const top = (startHour - startsAt + startMinute / 60) * 40; // 40px per hour, adjusted for startsAt
     const duration =
       (endHour + endMinute / 60 - (startHour + startMinute / 60)) * 40;
 
@@ -91,7 +102,7 @@ const WeekCalendar = ({
   const getCurrentTimePosition = () => {
     const hour = currentTime.getHours();
     const minute = currentTime.getMinutes();
-    return (hour + minute / 60) * 40;
+    return (hour - startsAt + minute / 60) * 40;
   };
 
   const isToday = (day) => isSameDay(day, new Date());
@@ -183,8 +194,25 @@ const WeekCalendar = ({
     }
   };
 
+  const handleArrowKeyDown = (e) => {
+    console.log("Key pressed:", e.key);
+    let newDate;
+    if (e.key === "ArrowLeft") {
+      newDate = subWeeks(currentDate, 1);
+    } else if (e.key === "ArrowRight") {
+      newDate = addWeeks(currentDate, 1);
+    }
+    if (newDate) {
+      setCurrentDate(newDate);
+      const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+      const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+      onDateChange(newDate, start, end);
+      setHoveredWeek({ from: start, to: end });
+    }
+  };
+
   return (
-    <div className="week-calendar">
+    <div className="week-calendar" onKeyDown={handleArrowKeyDown} tabIndex={0}>
       {/* Header */}
       <div className="calendar-header">
         <div className="calendar-header-left">
@@ -255,15 +283,15 @@ const WeekCalendar = ({
           <div className="time-header"></div>
           {hours.map((hour) => (
             <div key={hour} className="time-slot">
-              {hour > 0 && (
-                <span className="time-label">
-                  {hour === 12
+              <span className="time-label">
+                {hourType === "solar"
+                  ? hour === 12
                     ? "12 PM"
                     : hour > 12
                       ? `${hour - 12} PM`
-                      : `${hour} AM`}
-                </span>
-              )}
+                      : `${hour} AM`
+                  : `${hour}:00`}
+              </span>
             </div>
           ))}
         </div>
@@ -299,15 +327,17 @@ const WeekCalendar = ({
             ))}
 
             {/* Current time indicator */}
-            {weekDays.some((day) => isToday(day)) && (
-              <div
-                className="current-time-indicator"
-                style={{ top: `${getCurrentTimePosition()}px` }}
-              >
-                <div className="current-time-dot"></div>
-                <div className="current-time-line"></div>
-              </div>
-            )}
+            {weekDays.some((day) => isToday(day)) &&
+              currentTime.getHours() >= startsAt &&
+              currentTime.getHours() <= endsAt && (
+                <div
+                  className="current-time-indicator"
+                  style={{ top: `${getCurrentTimePosition()}px` }}
+                >
+                  <div className="current-time-dot"></div>
+                  <div className="current-time-line"></div>
+                </div>
+              )}
 
             {/* Events */}
             <div className="events-container">
