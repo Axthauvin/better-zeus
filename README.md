@@ -1,133 +1,58 @@
-# Better Zeus Extension - React
+<div align="center">
+  <img src="src/icons/128x128.png" width="128" alt="Extension Icon" />
 
-Extension pour améliorer l'interface de Zeus (zeus.ionis-it.com) avec un calendrier hebdomadaire interactif pour l'emploi du temps.
+# Better Zeus
+
+Zeus sucks. So i made a better version, with a cool UI.
+
+  <p>
+    <a href="#installation">Installation</a> •
+    <a href="#features">Features</a> •
+    <a href="#screenshots--demos">Demos</a> •
+    <a href="#contributing">Contribute</a>
+  </p>
+</div>
+
+---
+
+<img src="./github/presentation.png">
+
+## Installation (Chrome based browsers & Firefox)
+
+Check the release page and follow the instructions :
+
+## [**GitHub Releases**](https://github.com/axthauvin/better-zeus/releases/)
 
 ## Features
 
-- 📅 Vue hebdomadaire du calendrier (Week view)
-- ⚛️ Développé avec React 18 et JSX
-- 🎨 Design inspiré d'Untitled UI
-- 📱 Interface responsive
-- 🔄 Navigation semaine par semaine
-- ⏰ Affichage des événements avec créneaux horaires
-- ⏱️ Indicateur de l'heure actuelle en temps réel
-- ✨ Événements colorés avec détails (titre, heure)
+- Daily and weekly view of the calendar, with a clear indication of the current day and week.
+- Colored events based on their type (project, piscine, etc.) for easy identification.
+- Responsive design that adapts to different screen sizes and devices.
+- Selected courses stays even when you refresh the page, so you don't have to select them again.
 
-## Installation
+---
 
-### Prérequis
+## Screenshots & Demos
 
-- Node.js 18+ installé
-- npm ou yarn
+![Choose the week](./github/choose-the-week.png)
 
-### Installation des dépendances
+![Events](./github/events.png)
 
-```bash
-npm install
-```
+## Contributing
 
-### Build de l'extension
+Pull requests and suggestions are welcome!
+Feel free to open issues or submit feature ideas.
 
-1. Compiler avec webpack :
+## Local Development
+
+To use and build the extension locally:
 
 ```bash
-npm run build:webpack
+pnpm install # please dont be a jerk and use pnpm
+pnpm run build
 ```
 
-2. Construire pour votre navigateur :
+This project uses [React](https://react.dev) to make it easier to develop and maintain. If you want to contribute, make sure to follow the code style and structure.
 
-```bash
-npm run build     # Pour Chrome et Firefox
-node build.js chrome   # Pour Chrome uniquement
-node build.js firefox  # Pour Firefox uniquement
-```
-
-### Mode développement
-
-Pour développer avec rechargement automatique :
-
-```bash
-npm run dev
-```
-
-Puis dans un autre terminal :
-
-```bash
-node build.js firefox  # Rebuild après chaque changement webpack
-```
-
-### Charger l'extension
-
-#### Chrome / Edge
-
-- Ouvrir `chrome://extensions`
-- Activer "Mode développeur"
-- Cliquer sur "Charger l'extension non empaquetée"
-- Sélectionner le dossier `dist-chrome`
-
-#### Firefox
-
-- Ouvrir `about:debugging#/runtime/this-firefox`
-- Cliquer sur "Charger un module complémentaire temporaire"
-- Sélectionner le fichier `dist-firefox/manifest.json`
-
-## Utilisation
-
-1. Naviguez vers https://zeus.ionis-it.com/home
-2. Le calendrier hebdomadaire s'affichera automatiquement en haut de la page
-3. Utilisez les flèches pour naviguer entre les semaines
-4. Cliquez sur "Today" pour revenir à la semaine actuelle
-5. L'indicateur violet montre l'heure actuelle
-6. Les événements s'affichent dans leur créneau horaire correspondant
-
-## Structure du projet
-
-```
-better-zeus/
-├── src/
-│   └── content/
-│       ├── index.jsx                    # Point d'entrée
-│       └── components/
-│           ├── WeekCalendar.jsx         # Composant calendrier semaine
-│           └── WeekCalendar.css         # Styles du calendrier
-├── dist/                                # Build webpack
-├── dist-chrome/                         # Build final Chrome
-├── dist-firefox/                        # Build final Firefox
-├── manifest.chrome.json                 # Manifest V3 pour Chrome
-├── manifest.firefox.json                # Manifest V2 pour Firefox
-├── webpack.config.js                    # Configuration webpack
-├── build.js                             # Script de build
-└── package.json
-```
-
-## Technologies
-
-- **React 18** - UI Library
-- **date-fns** - Manipulation moderne des dates
-- **Webpack 5** - Module bundler
-- **Babel** - JSX transpiler
-- **CSS3** - Styles
-- **Browser Extension API** - Manifest V2/V3
-
-## TODO
-
-- [ ] Intégration avec l'API Zeus pour récupérer les vraies données
-- [ ] Ajout de notifications pour les cours à venir
-- [ ] Vue mensuelle en plus de la vue semaine
-- [ ] Vue journalière détaillée
-- [ ] Personnalisation des couleurs par type de cours
-- [ ] Export du calendrier (iCal, Google Calendar)
-- [ ] Synchronisation avec d'autres calendriers
-- [ ] Mode sombre
-
-## Scripts disponibles
-
-- `npm run build` - Build complet (webpack + extension)
-- `npm run build:webpack` - Build webpack uniquement
-- `npm run dev` - Mode développement avec watch
-- `npm test` - Lancer les tests
-- `npm run test:watch` - Tests en mode watch
-
-## Licence
-
-MIT
+<div align="center">
+<br/> <b> Enjoy Better Zeus!</b></div>
