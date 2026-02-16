@@ -3,8 +3,7 @@
   "name": "Better Zeus",
   "author": "Axel Thauvin",
   "version": "1.0",
-  "description": "Améliore l'interface de Zeus avec un calendrier interactif pour votre emploi du temps.",
-  "host_permissions": ["https://unpkg.com/*"],
+  "description": "Améliore l'interface de Zeus avec un calendrier juste plus beau.",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
@@ -16,8 +15,8 @@
     }
   ],
   "icons": {
-    "16": "src/icons/favicon-16x16.png",
-    "48": "src/icons/favicon-48x48.png",
-    "128": "src/icons/favicon-128x128.png"
+    "16": "src/icons/16x16.png",
+    "48": "src/icons/48x48.png",
+    "128": "src/icons/128x128.png"
   }
 }
