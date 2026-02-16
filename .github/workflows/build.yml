@@ -9,6 +9,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write # ← AJOUTER CETTE LIGNE ICI
+
 jobs:
   build:
     runs-on: ubuntu-latest

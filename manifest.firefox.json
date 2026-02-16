@@ -17,5 +17,8 @@
     "48": "src/icons/48x48.png",
     "128": "src/icons/128x128.png"
   },
+  "browser_specific_settings": {
+    "gecko": { "id": "{97773fa8-059a-42d7-a3d0-edc929c3905f}" }
+  },
   "license": "MIT"
 }
