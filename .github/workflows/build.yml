@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # ← AJOUTER CETTE LIGNE ICI
+  contents: write
 
 jobs:
   build:
