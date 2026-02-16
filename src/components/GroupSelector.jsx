@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getUserGroups } from "../api";
 import "./GroupSelector.css";
 import { Search, Trash, Plus } from "lucide-react";
+import { Check } from "lucide-react";
 
 const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
   const [allGroups, setAllGroups] = useState([]);
@@ -165,7 +166,7 @@ const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
             <div className="selected-groups">
               {selectedGroupsData.map((group) => (
                 <div key={group.id} className="selected-group-item">
-                  <div className="group-icon">✓</div>
+                  <Check color="#7f56d9" size={16} />
                   <span className="group-name">{group.name}</span>
                   <button
                     className="remove-btn"
@@ -183,11 +184,11 @@ const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
         <div className="all-groups-section">
           <div className="section-header">
             <span className="section-title">Tous les groupes</span>
-            {unselectedFilteredGroups.length > 0 && (
+            {/* {unselectedFilteredGroups.length > 0 && (
               <button className="select-all-btn" onClick={handleSelectAll}>
                 Tout sélectionner
               </button>
-            )}
+            )} */}
           </div>
           <div className="group-list">
             {unselectedFilteredGroups.length === 0 &&

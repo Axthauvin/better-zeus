@@ -11,8 +11,7 @@ import { fr } from "date-fns/locale";
 import EventModal from "./EventModal";
 import EventCard from "./EventCard";
 import "./DayCalendar.css";
-import { Calendar } from "lucide-react";
-import SimpleDatePicker from "./SimpleDatePicker";
+import { MyDayPicker } from "./DayPicker";
 
 const DayCalendar = ({
   events = [],
@@ -199,9 +198,15 @@ const DayCalendar = ({
             >
               <ChevronLeftIcon />
             </button>
-            <button className="btn-today" onClick={goToToday}>
+            {/* <button className="btn-today" onClick={goToToday}>
               Today
-            </button>
+            </button> */}
+            <MyDayPicker
+              value={currentDate}
+              onChange={handleDatePickerChange}
+              locale={fr}
+              mode="single"
+            />
             <button
               className="btn-icon"
               onClick={nextDay}
@@ -228,13 +233,6 @@ const DayCalendar = ({
               </button>
             </div>
           </div>
-
-          <SimpleDatePicker
-            value={currentDate}
-            onChange={handleDatePickerChange}
-            locale={fr}
-            mode="single"
-          />
         </div>
       </div>
 

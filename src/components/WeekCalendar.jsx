@@ -14,10 +14,7 @@ import { fr } from "date-fns/locale";
 import EventModal from "./EventModal";
 import EventCard from "./EventCard";
 import "./WeekCalendar.css";
-import { CameraIcon } from "lucide-react";
-import { Calendar } from "lucide-react";
-import SimpleDatePicker from "./SimpleDatePicker";
-import DatePicker from "./DatePicker";
+import { MyDayPicker } from "./DayPicker";
 
 const WeekCalendar = ({
   events = [],
@@ -218,9 +215,15 @@ const WeekCalendar = ({
             >
               <ChevronLeftIcon />
             </button>
-            <button className="btn-today" onClick={goToToday}>
+            {/* <button className="btn-today" onClick={goToToday}>
               Today
-            </button>
+            </button> */}
+            <MyDayPicker
+              value={currentDate}
+              onChange={handleDatePickerChange}
+              locale={fr}
+              mode="week"
+            />
             <button
               className="btn-icon"
               onClick={nextWeek}
@@ -242,13 +245,6 @@ const WeekCalendar = ({
               <button onClick={() => onViewChange("day")}>Day view</button>
             </div>
           </div>
-
-          <DatePicker
-            value={currentDate}
-            onChange={handleDatePickerChange}
-            locale={fr}
-            mode="week"
-          />
         </div>
       </div>
 
