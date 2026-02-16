@@ -23,7 +23,7 @@ jobs:
           node-version: "20"
 
       - name: Build extensions
-        run: node build.js all
+        run: npm install && npm run build
 
       - name: Update manifest versions
         if: startsWith(github.ref, 'refs/tags/')
