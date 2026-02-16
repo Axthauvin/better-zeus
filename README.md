@@ -15,7 +15,7 @@ Zeus sucks. So i made a better version, with a cool UI.
 
 ---
 
-<img src="./github/presentation.png">
+<img src="./.github/presentation.png">
 
 ## Installation (Chrome based browsers & Firefox)
 
@@ -34,9 +34,9 @@ Check the release page and follow the instructions :
 
 ## Screenshots & Demos
 
-![Choose the week](./github/choose-the-week.png)
+![Choose the week](./.github/choose-the-week.png)
 
-![Events](./github/events.png)
+![Events](./.github/events.png)
 
 ## Contributing
 

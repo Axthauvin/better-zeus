@@ -1,0 +1,122 @@
+name: Build Extensions
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build extensions
+        run: node build.js all
+
+      - name: Update manifest versions
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          # Extract version from tag (e.g., v2.1.0 -> 2.1.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Updating manifests to version $VERSION"
+          # Update version in both manifests
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" dist-chrome/manifest.json
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" dist-firefox/manifest.json
+
+      - name: Create Chrome zip
+        run: |
+          cd dist-chrome
+          zip -r ../better-zeus-chrome.zip .
+          cd ..
+
+      - name: Create Firefox zip
+        run: |
+          cd dist-firefox
+          # An XPI is just a ZIP with an .xpi extension
+          zip -r -X ../better-zeus-firefox.xpi .
+          cd ..
+
+      - name: Install web-ext
+        if: startsWith(github.ref, 'refs/tags/')
+        run: npm install --global web-ext
+
+      - name: Sign Firefox extension on AMO
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          web-ext sign \
+            --source-dir=dist-firefox \
+            --artifacts-dir=signed \
+            --api-key=$WEB_EXT_API_KEY \
+            --api-secret=$WEB_EXT_API_SECRET \
+            --channel=unlisted
+
+      - name: Move signed extension
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          if [ -f signed/*.xpi ]; then
+            mv signed/*.xpi better-zeus-firefox.xpi
+          fi
+
+      - name: Upload Chrome extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension
+          path: better-zeus-chrome.zip
+
+      - name: Upload Firefox extension (unsigned)
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension-unsigned
+          path: better-zeus-firefox.xpi
+
+      - name: Upload signed Firefox extension
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension-signed
+          path: better-zeus-firefox.xpi
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            better-zeus-chrome.zip
+            better-zeus-firefox.xpi
+          body: |
+            ## 📦 Installation Instructions
+
+            ### Chrome/Edge/Brave
+            1. Download `better-zeus-chrome.zip`
+            2. Extract the ZIP file
+            3. Open `chrome://extensions/` (or `edge://extensions/`)
+            4. Enable **Developer mode**
+            5. Click **Load unpacked**
+            6. Select the extracted folder
+
+            ### Firefox
+            1. Download `better-zeus-firefox.xpi`
+            2. Simply **drag and drop** the file into Firefox
+            3. Confirm the installation prompt
+
+            This Firefox extension is **officially signed** by Mozilla and can be installed directly without any configuration changes!
+
+            ---
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
