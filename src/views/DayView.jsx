@@ -87,9 +87,10 @@ const DayView = ({
       className="day-calendar"
     >
       {/* Calendar Grid */}
-      <div className="calendar-grid-container">
+      <div className="day-calendar-grid-container">
         {/* Time column */}
         <div className="time-column">
+          <div className="time-header"></div>
           {hours.map((hour) => (
             <div key={hour} className="time-slot">
               <span className="time-label">{formatHour(hour)}</span>
@@ -97,48 +98,75 @@ const DayView = ({
           ))}
         </div>
 
-        {/* Day column */}
-        <div className="day-content">
-          <div className="day-grid">
-            {/* Time grid background */}
-            <div className="time-grid">
-              {hours.map((hour) => (
-                <div key={hour} className="grid-cell" />
-              ))}
-            </div>
-
-            {/* Events container */}
-            <div className="events-container">
-              {/* Current time indicator */}
-              {showIndicator && (
-                <div
-                  className="current-time-line"
-                  style={{
-                    top: `${getCurrentTimePosition(currentTime, CALENDAR_CONFIG.HOUR_HEIGHT_DAY)}px`,
-                  }}
-                >
-                  <div className="time-dot"></div>
-                </div>
+        {/* Days columns */}
+        <div className="day-grid">
+          {/* Day headers */}
+          <div className="day-headers" style={{ gridTemplateColumns: "none" }}>
+            <div
+              className={`day-header ${isToday(currentDate) ? "today" : ""}`}
+            >
+              <span className="day-name">
+                {format(currentDate, "EEE", { locale: fr })}{" "}
+                {!isToday(currentDate) && format(currentDate, "d")}
+              </span>
+              {isToday(currentDate) && (
+                <span className="today-badge">{format(currentDate, "d")}</span>
               )}
+            </div>
+          </div>
 
-              {/* Events */}
-              {dayEvents.map((event) => {
-                const position = getEventPosition(
-                  event,
-                  CALENDAR_CONFIG.HOUR_HEIGHT_DAY,
-                );
-                const eventStyle = getEventStyle(event);
+          {/* Hour grid */}
+          <div className="hour-grid-day">
+            {hours.map((hour) => (
+              <div key={hour} className="hour-row-day"></div>
+            ))}
+          </div>
 
-                return (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    style={position}
-                    colorStyle={eventStyle}
-                    onClick={() => handleEventClick(event)}
-                  />
-                );
-              })}
+          {/* Events container */}
+          <div className="events-container">
+            {/* Current time indicator */}
+            {showIndicator && (
+              <div
+                className="current-time-indicator"
+                style={{
+                  top: `${getCurrentTimePosition(currentTime, CALENDAR_CONFIG.HOUR_HEIGHT)}px`,
+                }}
+              >
+                <div className="current-time-dot"></div>
+                <div className="current-time-line"></div>
+              </div>
+            )}
+
+            {/* Events */}
+            <div className="events-container-day">
+              {dayEvents.length === 0 ? (
+                <div className="no-events-day">
+                  <p>Aucun événement prévu ce jour</p>
+                </div>
+              ) : (
+                dayEvents.map((event) => {
+                  const { top, height } = getEventPosition(
+                    event,
+                    CALENDAR_CONFIG.HOUR_HEIGHT,
+                  );
+                  const eventStyle = getEventStyle(event);
+
+                  return (
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      eventStyle={{
+                        top: `${top}px`,
+                        height: `${height}px`,
+                        backgroundColor: eventStyle.bg,
+                        borderLeftColor: eventStyle.border,
+                        color: eventStyle.text,
+                      }}
+                      onClick={() => handleEventClick(event)}
+                    />
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

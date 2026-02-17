@@ -140,66 +140,65 @@ const WeekView = ({
           </div>
 
           {/* Day columns with events */}
-          <div className="day-columns">
-            {/* Time grid background */}
-            <div className="time-grid">
-              {hours.map((hour) =>
-                weekDays.map((day, dayIndex) => (
-                  <div
-                    key={`${hour}-${dayIndex}`}
-                    className="grid-cell"
-                    style={{
-                      gridColumn: dayIndex + 1,
-                      gridRow: hour - CALENDAR_CONFIG.HOUR_START + 1,
-                    }}
-                  />
-                )),
+          <div className="hour-grid">
+            {hours.map((hour) => (
+              <div key={hour} className="hour-row">
+                {weekDays.map((day, dayIndex) => (
+                  <div key={dayIndex} className="hour-cell"></div>
+                ))}
+              </div>
+            ))}
+
+            {/* Current time indicator */}
+            {weekDays.some((day) => isToday(day)) &&
+              currentTime.getHours() >= CALENDAR_CONFIG.HOUR_START &&
+              currentTime.getHours() <= CALENDAR_CONFIG.HOUR_END && (
+                <div
+                  className="current-time-indicator"
+                  style={{
+                    top: `${getCurrentTimePosition(currentTime, CALENDAR_CONFIG.HOUR_HEIGHT)}px`,
+                  }}
+                >
+                  <div className="current-time-dot"></div>
+                  <div className="current-time-line"></div>
+                </div>
               )}
-            </div>
 
             {/* Events */}
-            {weekDays.map((day, dayIndex) => {
-              const dayEvents = getEventsForDay(events, day);
-              const showIndicator = shouldShowTimeIndicator(
-                currentTime,
-                isToday(day),
-              );
-
-              return (
-                <div key={dayIndex} className="day-column">
-                  {/* Current time indicator */}
-                  {showIndicator && (
-                    <div
-                      className="current-time-line"
-                      style={{
-                        top: `${getCurrentTimePosition(currentTime, CALENDAR_CONFIG.HOUR_HEIGHT_WEEK)}px`,
-                      }}
-                    >
-                      <div className="time-dot"></div>
-                    </div>
-                  )}
-
-                  {/* Events */}
-                  {dayEvents.map((event) => {
-                    const position = getEventPosition(
-                      event,
-                      CALENDAR_CONFIG.HOUR_HEIGHT_WEEK,
-                    );
-                    const eventStyle = getEventStyle(event);
-
-                    return (
-                      <EventCard
-                        key={event.id}
-                        event={event}
-                        style={position}
-                        colorStyle={eventStyle}
-                        onClick={() => handleEventClick(event)}
-                      />
-                    );
-                  })}
-                </div>
-              );
-            })}
+            <div className="events-container">
+              {weekDays.map((day, dayIndex) => {
+                const dayEvents = getEventsForDay(events, day);
+                return (
+                  <div
+                    key={dayIndex}
+                    className="day-events"
+                    style={{ left: `${dayIndex * (100 / 7)}%` }}
+                  >
+                    {dayEvents.map((event) => {
+                      const { top, height } = getEventPosition(
+                        event,
+                        CALENDAR_CONFIG.HOUR_HEIGHT,
+                      );
+                      const eventStyle = getEventStyle(event);
+                      return (
+                        <EventCard
+                          key={event.id}
+                          event={event}
+                          eventStyle={{
+                            top: `${top}px`,
+                            height: `${height}px`,
+                            backgroundColor: eventStyle.bg,
+                            borderLeftColor: eventStyle.border,
+                            color: eventStyle.text,
+                          }}
+                          onClick={() => handleEventClick(event)}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

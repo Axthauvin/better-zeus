@@ -3,7 +3,7 @@ import {
   CALENDAR_CONFIG,
   EVENT_COLOR_MAP,
   DEFAULT_EVENT_STYLE,
-} from "./calendarConstants";
+} from "./calendarConstants.js";
 
 /**
  * Get event style based on event color

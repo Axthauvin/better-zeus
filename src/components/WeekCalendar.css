@@ -1,5 +1,9 @@
 /* Week Calendar Styles - Untitled UI inspired */
 
+body {
+  max-width: 100%;
+}
+
 .week-calendar {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",

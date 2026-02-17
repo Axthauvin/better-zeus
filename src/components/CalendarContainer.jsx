@@ -19,6 +19,9 @@ import {
   subWeeks,
 } from "date-fns";
 import { fr } from "date-fns/locale";
+import BaseCalendarLayout from "../views/BaseCalendarLayout";
+import WeekView from "../views/WeekView";
+import DayView from "../views/DayView";
 
 const CalendarContainer = () => {
   const [view, setView] = useState(getSavedView());
@@ -133,7 +136,7 @@ const CalendarContainer = () => {
       />
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         {view === "week" ? (
-          <WeekCalendar
+          <WeekView
             events={events}
             onViewChange={handleViewChange}
             onDateChange={handleDateChange}
@@ -142,7 +145,7 @@ const CalendarContainer = () => {
             loading={loading}
           />
         ) : (
-          <DayCalendar
+          <DayView
             events={events}
             onViewChange={handleViewChange}
             onDateChange={handleDateChange}
@@ -151,6 +154,7 @@ const CalendarContainer = () => {
             loading={loading}
           />
         )}
+
         {error && (
           <div
             style={{

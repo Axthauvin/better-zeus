@@ -10,8 +10,7 @@
   "content_scripts": [
     {
       "matches": ["https://zeus.ionis-it.com/*"],
-      "js": ["src/content/zeus-calendar.js"],
-      "run_at": "document_start"
+      "js": ["src/content/zeus-calendar.js"]
     }
   ],
   "icons": {

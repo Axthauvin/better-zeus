@@ -1,9 +1,8 @@
 // Calendar configuration constants
 export const CALENDAR_CONFIG = {
   HOUR_START: 6,
-  HOUR_END: 22,
-  HOUR_HEIGHT_WEEK: 40, // pixels per hour in week view
-  HOUR_HEIGHT_DAY: 50, // pixels per hour in day view
+  HOUR_END: 24,
+  HOUR_HEIGHT: 40, // pixels per hour
 };
 
 // Event color mapping with pastel backgrounds and borders

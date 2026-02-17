@@ -76,6 +76,11 @@
   flex: 1;
 }
 
+.time-header {
+  height: 48px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .time-slot-day {
   height: 50px;
   border-bottom: 1px solid #f3f4f6;
