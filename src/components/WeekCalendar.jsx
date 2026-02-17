@@ -202,7 +202,7 @@ const WeekCalendar = ({
           <div className="calendar-date-info">
             <div className="calendar-month-day">
               <span className="month-label">
-                {format(currentDate, "MMM", { locale: fr }).toUpperCase()}.
+                {format(currentDate, "MMM", { locale: fr }).toUpperCase()}
               </span>
               <span className="day-number">{format(currentDate, "d")}</span>
             </div>

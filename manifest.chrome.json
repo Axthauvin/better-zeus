@@ -9,9 +9,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://zeus.ionis-it.com/home*"],
+      "matches": ["https://zeus.ionis-it.com/*"],
       "js": ["src/content/zeus-calendar.js"],
-      "run_at": "document_end"
+      "run_at": "document_start"
     }
   ],
   "icons": {

@@ -173,9 +173,30 @@ export function getGroupName(groupId) {
   return group ? group.name : "Unknown Group";
 }
 
+function getGroupsFromRealZeus() {
+  const savedGroup = localStorage.getItem("ZEUS-PREFERRED");
+  const parsedGroup = JSON.parse(savedGroup);
+
+  if (parsedGroup && parsedGroup.id) {
+    saveSelectedGroups([parsedGroup.id]);
+    return [parsedGroup.id];
+  }
+
+  return null;
+}
+
 export function getSavedGroups() {
   const savedGroup = localStorage.getItem("better-zeus-saved-group");
-  return savedGroup ? JSON.parse(savedGroup) : null;
+  if (!savedGroup) {
+    // Try to get groups from real Zeus if not found in our storage
+    // Will convert the saved group to our format and save it in our storage for future use
+    const zeusGroups = getGroupsFromRealZeus();
+    if (zeusGroups) {
+      return zeusGroups;
+    }
+  }
+
+  return JSON.parse(savedGroup);
 }
 
 export function saveSelectedGroups(groups) {
@@ -189,4 +210,9 @@ export function getSavedView() {
 
 export function saveView(view) {
   localStorage.setItem("better-zeus-calendar-view", view);
+}
+
+export function logout() {
+  localStorage.removeItem("ZEUS-AUTH");
+  window.location.reload();
 }

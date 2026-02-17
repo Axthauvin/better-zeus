@@ -7,9 +7,8 @@
   "content_security_policy": "script-src 'self' object-src 'self'",
   "content_scripts": [
     {
-      "matches": ["https://zeus.ionis-it.com/home*"],
-      "js": ["src/content/zeus-calendar.js"],
-      "run_at": "document_end"
+      "matches": ["https://zeus.ionis-it.com/*"],
+      "js": ["src/content/zeus-calendar.js"]
     }
   ],
   "icons": {

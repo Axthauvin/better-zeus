@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/icons/128x128.png" width="128" alt="Extension Icon" />
+  <img src="src/icons/better-zeus.png" width="128" alt="Extension Icon" />
 
 # Better Zeus
 
