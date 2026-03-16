@@ -26,7 +26,7 @@ const EventModal = ({ event, onClose }) => {
   if (!event) return null;
 
   const missed = isEventMissed(event.id);
-  const ignored = isEventIgnored(event.id);
+  const ignored = isEventIgnored(event);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -136,7 +136,7 @@ const EventModal = ({ event, onClose }) => {
           <div className="attendance-actions">
             <button
               className={`attendance-action ${missed ? "active missed" : ""}`}
-              onClick={() => toggleMissedEvent(event.id)}
+              onClick={() => toggleMissedEvent(event)}
             >
               <div className="attendance-action-main">
                 {missed ? (
@@ -153,7 +153,7 @@ const EventModal = ({ event, onClose }) => {
 
             <button
               className={`attendance-action ${ignored ? "active ignored" : ""}`}
-              onClick={() => toggleIgnoredEvent(event.id)}
+              onClick={() => toggleIgnoredEvent(event)}
             >
               <div className="attendance-action-main">
                 <CheckCircle2 size={18} className="attendance-action-icon" />

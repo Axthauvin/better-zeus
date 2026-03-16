@@ -6,7 +6,7 @@ import "./EventCard.css";
 const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
   const { isEventMissed, isEventIgnored } = useAttendance();
   const missed = isEventMissed(event.id);
-  const ignored = isEventIgnored(event.id);
+  const ignored = isEventIgnored(event);
   const hasTitle = event.title && event.title.trim() !== "";
   const duration = (event.end - event.start) / (1000 * 60); // duration in minutes
 

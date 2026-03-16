@@ -21,6 +21,15 @@ export const AttendanceProvider = ({ children }) => {
     }
   });
 
+  const [ignoredCourseTitles, setIgnoredCourseTitles] = useState(() => {
+    try {
+      const saved = localStorage.getItem("better-zeus-ignored-course-titles");
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   const [attendanceThreshold, setAttendanceThreshold] = useState(() => {
     try {
       const saved = localStorage.getItem("better-zeus-attendance-threshold");
@@ -46,12 +55,34 @@ export const AttendanceProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem(
+      "better-zeus-ignored-course-titles",
+      JSON.stringify(ignoredCourseTitles),
+    );
+  }, [ignoredCourseTitles]);
+
+  useEffect(() => {
+    localStorage.setItem(
       "better-zeus-attendance-threshold",
       String(attendanceThreshold),
     );
   }, [attendanceThreshold]);
 
-  const toggleMissedEvent = (eventId) => {
+  const normalizeCourseTitle = (title) =>
+    String(title || "")
+      .trim()
+      .toLowerCase();
+
+  const toggleMissedEvent = (eventOrId) => {
+    const eventId =
+      typeof eventOrId === "object" && eventOrId !== null
+        ? eventOrId.id
+        : eventOrId;
+    const eventTitle =
+      typeof eventOrId === "object" && eventOrId !== null
+        ? eventOrId.title
+        : "";
+    const normalizedTitle = normalizeCourseTitle(eventTitle);
+
     setMissedEvents((prev) => {
       if (prev.includes(eventId)) {
         return prev.filter((id) => id !== eventId);
@@ -62,36 +93,71 @@ export const AttendanceProvider = ({ children }) => {
 
     // A course cannot be both ignored and missed
     setIgnoredEvents((prev) => prev.filter((id) => id !== eventId));
+    if (normalizedTitle) {
+      setIgnoredCourseTitles((prev) =>
+        prev.filter((title) => title !== normalizedTitle),
+      );
+    }
   };
 
-  const toggleIgnoredEvent = (eventId) => {
-    setIgnoredEvents((prev) => {
-      if (prev.includes(eventId)) {
-        return prev.filter((id) => id !== eventId);
-      }
-      return [...prev, eventId];
-    });
+  const toggleIgnoredEvent = (eventOrId) => {
+    const eventId =
+      typeof eventOrId === "object" && eventOrId !== null
+        ? eventOrId.id
+        : eventOrId;
+    const eventTitle =
+      typeof eventOrId === "object" && eventOrId !== null
+        ? eventOrId.title
+        : "";
+    const normalizedTitle = normalizeCourseTitle(eventTitle);
+
+    if (normalizedTitle) {
+      setIgnoredCourseTitles((prev) => {
+        if (prev.includes(normalizedTitle)) {
+          return prev.filter((title) => title !== normalizedTitle);
+        }
+        return [...prev, normalizedTitle];
+      });
+    } else {
+      setIgnoredEvents((prev) => {
+        if (prev.includes(eventId)) {
+          return prev.filter((id) => id !== eventId);
+        }
+        return [...prev, eventId];
+      });
+    }
 
     // An ignored course is excluded, not marked missed
     setMissedEvents((prev) => prev.filter((id) => id !== eventId));
   };
 
+  const isIgnoredEvent = (event) => {
+    const titleIgnored = ignoredCourseTitles.includes(
+      normalizeCourseTitle(event?.title),
+    );
+    const idIgnored = ignoredEvents.includes(event?.id);
+    return titleIgnored || idIgnored;
+  };
+
   const isEventMissed = (eventId) => missedEvents.includes(eventId);
-  const isEventIgnored = (eventId) => ignoredEvents.includes(eventId);
+  const isEventIgnored = (eventOrId) => {
+    if (typeof eventOrId === "object" && eventOrId !== null) {
+      return isIgnoredEvent(eventOrId);
+    }
+    return ignoredEvents.includes(eventOrId);
+  };
 
   const calculateAttendanceRate = (visibleEvents) => {
     if (!visibleEvents || visibleEvents.length === 0) return 100;
 
-    const eligibleEvents = visibleEvents.filter(
-      (ev) => !ignoredEvents.includes(ev.id),
-    );
+    const eligibleEvents = visibleEvents.filter((ev) => !isIgnoredEvent(ev));
 
     if (eligibleEvents.length === 0) return 100;
 
     const totalCount = eligibleEvents.length;
     const missedCount = visibleEvents
       .filter((ev) => missedEvents.includes(ev.id))
-      .filter((ev) => !ignoredEvents.includes(ev.id)).length;
+      .filter((ev) => !isIgnoredEvent(ev)).length;
     return Math.round(((totalCount - missedCount) / totalCount) * 100);
   };
 
@@ -100,13 +166,11 @@ export const AttendanceProvider = ({ children }) => {
       return { total: 0, ignored: 0, missed: 0, counted: 0 };
     }
 
-    const ignored = visibleEvents.filter((ev) =>
-      ignoredEvents.includes(ev.id),
-    ).length;
+    const ignored = visibleEvents.filter((ev) => isIgnoredEvent(ev)).length;
 
     const counted = visibleEvents.length - ignored;
     const missed = visibleEvents.filter(
-      (ev) => missedEvents.includes(ev.id) && !ignoredEvents.includes(ev.id),
+      (ev) => missedEvents.includes(ev.id) && !isIgnoredEvent(ev),
     ).length;
 
     return { total: visibleEvents.length, ignored, missed, counted };
@@ -119,6 +183,8 @@ export const AttendanceProvider = ({ children }) => {
         setMissedEvents,
         ignoredEvents,
         setIgnoredEvents,
+        ignoredCourseTitles,
+        setIgnoredCourseTitles,
         attendanceThreshold,
         setAttendanceThreshold,
         toggleMissedEvent,
