@@ -15,6 +15,7 @@ import { useCurrentTime } from "../hooks/useCurrentTime";
 import {
   getEventStyle,
   getEventPosition,
+  getEventLayouts,
   getCurrentTimePosition,
   getEventsForDay,
   getCalendarHours,
@@ -31,6 +32,10 @@ const WeekView = ({
   onDateChange,
   onViewChange,
   loading,
+  eventSearchQuery,
+  onEventSearchQueryChange,
+  theme,
+  onToggleTheme,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -62,6 +67,16 @@ const WeekView = ({
     }
   };
 
+  const handleToday = () => {
+    const today = new Date();
+    setCurrentDate(today);
+    onDateChange(
+      today,
+      startOfWeek(today, { locale: fr, weekStartsOn: 1 }),
+      endOfWeek(today, { locale: fr, weekStartsOn: 1 }),
+    );
+  };
+
   // Event handlers
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -73,6 +88,7 @@ const WeekView = ({
 
   // Helper functions
   const isToday = (day) => isSameDay(day, new Date());
+  const todayIndex = weekDays.findIndex((day) => isToday(day));
 
   const getWeekNumber = () => {
     const start = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
@@ -100,11 +116,17 @@ const WeekView = ({
       currentDate={currentDate}
       onPrevious={handlePrevious}
       onNext={handleNext}
+      onToday={handleToday}
       onDateChange={handleDateChange}
       headerTitle={headerTitle}
       headerSubtitle={headerSubtitle}
+      events={events}
       selectedEvent={selectedEvent}
       onCloseModal={handleCloseModal}
+      eventSearchQuery={eventSearchQuery}
+      onEventSearchQueryChange={onEventSearchQueryChange}
+      theme={theme}
+      onToggleTheme={onToggleTheme}
       className="week-calendar"
     >
       {/* Calendar Grid */}
@@ -150,13 +172,16 @@ const WeekView = ({
             ))}
 
             {/* Current time indicator */}
-            {weekDays.some((day) => isToday(day)) &&
+            {todayIndex >= 0 &&
               currentTime.getHours() >= CALENDAR_CONFIG.HOUR_START &&
               currentTime.getHours() <= CALENDAR_CONFIG.HOUR_END && (
                 <div
                   className="current-time-indicator"
                   style={{
                     top: `${getCurrentTimePosition(currentTime, CALENDAR_CONFIG.HOUR_HEIGHT)}px`,
+                    left: `${(todayIndex * 100) / 7}%`,
+                    width: `${100 / 7}%`,
+                    right: "auto",
                   }}
                 >
                   <div className="current-time-dot"></div>
@@ -168,17 +193,17 @@ const WeekView = ({
             <div className="events-container">
               {weekDays.map((day, dayIndex) => {
                 const dayEvents = getEventsForDay(events, day);
+                const eventLayouts = getEventLayouts(
+                  dayEvents,
+                  CALENDAR_CONFIG.HOUR_HEIGHT,
+                );
                 return (
                   <div
                     key={dayIndex}
                     className="day-events"
                     style={{ left: `${dayIndex * (100 / 7)}%` }}
                   >
-                    {dayEvents.map((event) => {
-                      const { top, height } = getEventPosition(
-                        event,
-                        CALENDAR_CONFIG.HOUR_HEIGHT,
-                      );
+                    {eventLayouts.map(({ event, top, height, left, width }) => {
                       const eventStyle = getEventStyle(event);
                       return (
                         <EventCard
@@ -187,6 +212,10 @@ const WeekView = ({
                           eventStyle={{
                             top: `${top}px`,
                             height: `${height}px`,
+                            left,
+                            width,
+                            right: "auto",
+                            position: "absolute",
                             backgroundColor: eventStyle.bg,
                             borderLeftColor: eventStyle.border,
                             color: eventStyle.text,

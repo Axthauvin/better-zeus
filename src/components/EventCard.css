@@ -18,6 +18,38 @@
   z-index: 10;
 }
 
+.event-card.missed {
+  border-left-style: dashed;
+}
+
+.event-card.missed::after {
+  content: "Absent";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(127, 29, 29, 0.85);
+  background: rgba(254, 226, 226, 0.8);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+
+[data-theme="dark"] .event-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .event-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .event-card.missed::after {
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.55);
+}
+
 .event-card-content {
   height: 100%;
   display: flex;

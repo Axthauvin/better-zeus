@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import WeekCalendar from "./WeekCalendar";
-import DayCalendar from "./DayCalendar";
 import GroupSelector from "./GroupSelector";
 import {
   fetchTimeTable,
@@ -30,6 +28,22 @@ const CalendarContainer = () => {
   const [error, setError] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedGroups, setSelectedGroups] = useState(getSavedGroups() || []);
+  const [selectedRooms, setSelectedRooms] = useState([]);
+  const [eventSearchQuery, setEventSearchQuery] = useState("");
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("better-zeus-theme");
+    if (savedTheme === "light" || savedTheme === "dark") {
+      return savedTheme;
+    }
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("better-zeus-theme", theme);
+  }, [theme]);
 
   const handleArrowKeyDown = (e) => {
     console.log("Key pressed:", e.key);
@@ -44,7 +58,6 @@ const CalendarContainer = () => {
       const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
       const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
       loadEvents(start, end, selectedGroups);
-      setHoveredWeek({ from: start, to: end });
     }
   };
 
@@ -113,6 +126,49 @@ const CalendarContainer = () => {
     // Le useEffect se chargera de recharger les événements
   };
 
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  const availableRooms = Array.from(
+    new Set(
+      events
+        .flatMap((event) => event.rooms || [])
+        .map((room) => room?.name)
+        .filter(Boolean),
+    ),
+  ).sort((a, b) => a.localeCompare(b, "fr"));
+
+  const filteredEvents = events.filter((event) => {
+    const roomMatch =
+      selectedRooms.length === 0 ||
+      event.rooms?.some((room) => selectedRooms.includes(room.name));
+
+    if (!roomMatch) {
+      return false;
+    }
+
+    if (!eventSearchQuery.trim()) {
+      return true;
+    }
+
+    const query = eventSearchQuery.trim().toLowerCase();
+    const searchableFields = [
+      event.title,
+      event.location,
+      event.teacher,
+      event.type,
+      ...(event.groups || []),
+      ...(event.rooms || []).map((room) => room?.name || ""),
+    ];
+
+    return searchableFields.some((value) =>
+      String(value || "")
+        .toLowerCase()
+        .includes(query),
+    );
+  });
+
   if (loading && events.length === 0) {
     return (
       <div
@@ -129,29 +185,41 @@ const CalendarContainer = () => {
       style={{ display: "flex", height: "100%" }}
       onKeyDown={handleArrowKeyDown}
       tabIndex={0}
+      data-theme={theme}
     >
       <GroupSelector
         selectedGroups={selectedGroups}
         onGroupsChange={handleGroupsChange}
+        availableRooms={availableRooms}
+        selectedRooms={selectedRooms}
+        onRoomsChange={setSelectedRooms}
       />
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         {view === "week" ? (
           <WeekView
-            events={events}
+            events={filteredEvents}
             onViewChange={handleViewChange}
             onDateChange={handleDateChange}
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
             loading={loading}
+            onToggleTheme={handleToggleTheme}
+            theme={theme}
+            eventSearchQuery={eventSearchQuery}
+            onEventSearchQueryChange={setEventSearchQuery}
           />
         ) : (
           <DayView
-            events={events}
+            events={filteredEvents}
             onViewChange={handleViewChange}
             onDateChange={handleDateChange}
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
             loading={loading}
+            onToggleTheme={handleToggleTheme}
+            theme={theme}
+            eventSearchQuery={eventSearchQuery}
+            onEventSearchQueryChange={setEventSearchQuery}
           />
         )}
 

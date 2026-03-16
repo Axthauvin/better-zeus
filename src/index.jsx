@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import CalendarContainer from "./components/CalendarContainer";
 import LoginView from "./views/LoginView";
+import { AttendanceProvider } from "./context/AttendanceContext";
 
 // Show loading state immediately
 showLoadingState();
@@ -144,5 +145,9 @@ function showCalendar() {
 
   // Render the React app
   const root = createRoot(container);
-  root.render(<CalendarContainer />);
+  root.render(
+    <AttendanceProvider>
+      <CalendarContainer />
+    </AttendanceProvider>,
+  );
 }

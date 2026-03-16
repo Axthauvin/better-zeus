@@ -1,8 +1,12 @@
 import React from "react";
 import { format } from "date-fns";
+import { useAttendance } from "../context/AttendanceContext";
 import "./EventCard.css";
 
 const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
+  const { isEventMissed, isEventIgnored } = useAttendance();
+  const missed = isEventMissed(event.id);
+  const ignored = isEventIgnored(event.id);
   const hasTitle = event.title && event.title.trim() !== "";
   const duration = (event.end - event.start) / (1000 * 60); // duration in minutes
 
@@ -15,11 +19,17 @@ const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
 
   return (
     <div
-      className={`event-card ${compact ? "compact" : ""} ${!hasTitle ? "no-title" : ""} ${duration < 40 ? "small" : ""}`}
-      style={eventStyle}
+      className={`event-card ${compact ? "compact" : ""} ${!hasTitle ? "no-title" : ""} ${duration < 40 ? "small" : ""} ${missed ? "missed" : ""}`}
+      style={{ ...eventStyle, opacity: ignored ? 0.4 : missed ? 0.6 : 1 }}
       onClick={handleClick}
     >
-      <div className="event-card-content">
+      <div
+        className="event-card-content"
+        style={{
+          textDecoration: missed ? "line-through" : "none",
+          fontStyle: ignored ? "italic" : "normal",
+        }}
+      >
         {/* Pour les très petits événements (<= 1h ), afficher seulement titre ou location */}
         {duration <= 60 ? (
           <>

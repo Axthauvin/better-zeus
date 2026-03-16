@@ -218,6 +218,163 @@
   background: #f2f4f7;
 }
 
+.attendance-actions {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.attendance-action {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  color: #344054;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  padding: 11px 12px;
+  transition: all 0.15s ease;
+}
+
+.attendance-action-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.attendance-action-icon {
+  color: #6b7280;
+}
+
+.attendance-state-pill {
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.attendance-action:hover {
+  border-color: #d0d5dd;
+  background: #f2f4f7;
+}
+
+.attendance-action.active.missed {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+
+.attendance-action.active.missed .attendance-action-icon {
+  color: #b91c1c;
+}
+
+.attendance-action.active.missed .attendance-state-pill {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.attendance-action.active.ignored {
+  background: #ecfeff;
+  border-color: #a5f3fc;
+  color: #155e75;
+}
+
+.attendance-action.active.ignored .attendance-action-icon {
+  color: #0e7490;
+}
+
+.attendance-action.active.ignored .attendance-state-pill {
+  background: #06b6d4;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .event-modal {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .event-modal-header,
+[data-theme="dark"] .event-modal-footer {
+  border-color: #1f2937;
+}
+
+[data-theme="dark"] .event-modal-footer {
+  background: #111827;
+}
+
+[data-theme="dark"] .event-modal-title,
+[data-theme="dark"] .event-info-value {
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .event-modal-close,
+[data-theme="dark"] .event-info-icon,
+[data-theme="dark"] .event-info-label,
+[data-theme="dark"] .event-info-time,
+[data-theme="dark"] .event-description-text {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .event-modal-close:hover {
+  background: #1f2937;
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .event-info-item,
+[data-theme="dark"] .event-description {
+  border-color: #1f2937;
+}
+
+[data-theme="dark"] .event-modal-body::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-color: #0f172a;
+}
+
+[data-theme="dark"] .btn-modal-secondary {
+  background: #111827;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .btn-modal-secondary:hover {
+  background: #1f2937;
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .attendance-action {
+  background: #111827;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .attendance-action-icon {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .attendance-action:hover {
+  background: #1f2937;
+}
+
+[data-theme="dark"] .attendance-action.active.missed {
+  background: rgba(127, 29, 29, 0.45);
+  border-color: #7f1d1d;
+  color: #fecaca;
+}
+
+[data-theme="dark"] .attendance-action.active.ignored {
+  background: rgba(8, 145, 178, 0.3);
+  border-color: #0e7490;
+  color: #a5f3fc;
+}
+
 @media (max-width: 640px) {
   .event-modal {
     max-width: 100%;

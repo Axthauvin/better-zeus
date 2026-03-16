@@ -30,6 +30,82 @@ export const getEventPosition = (event, hourHeight) => {
 };
 
 /**
+ * Calculate event layouts including positioning for overlapping events
+ */
+export const getEventLayouts = (events, hourHeight) => {
+  if (!events || events.length === 0) return [];
+
+  // Sort events by start time, then end time descending
+  const sortedEvents = [...events].sort((a, b) => {
+    if (a.start.getTime() === b.start.getTime()) {
+      return b.end.getTime() - a.end.getTime();
+    }
+    return a.start.getTime() - b.start.getTime();
+  });
+
+  const layouts = [];
+  let columns = [];
+  let lastEventEnding = null;
+
+  const packEvents = () => {
+    const numColumns = columns.length;
+    columns.forEach((col, colIndex) => {
+      col.forEach((item) => {
+        layouts.push({
+          event: item.event,
+          top: item.top,
+          height: item.height,
+          left:
+            numColumns > 1
+              ? `calc(${(colIndex / numColumns) * 100}% + 2px)`
+              : "4px",
+          width:
+            numColumns > 1
+              ? `calc(${(1 / numColumns) * 100}% - 6px)`
+              : "calc(100% - 8px)",
+        });
+      });
+    });
+  };
+
+  sortedEvents.forEach((event) => {
+    const { top, height } = getEventPosition(event, hourHeight);
+    const bottom = top + height;
+
+    if (lastEventEnding !== null && top >= lastEventEnding) {
+      packEvents();
+      columns = [];
+      lastEventEnding = null;
+    }
+
+    let placed = false;
+    for (let i = 0; i < columns.length; i++) {
+      const col = columns[i];
+      const lastEventInCol = col[col.length - 1];
+      if (lastEventInCol.bottom <= top) {
+        col.push({ event, top, bottom, height });
+        placed = true;
+        break;
+      }
+    }
+
+    if (!placed) {
+      columns.push([{ event, top, bottom, height }]);
+    }
+
+    if (lastEventEnding === null || bottom > lastEventEnding) {
+      lastEventEnding = bottom;
+    }
+  });
+
+  if (columns.length > 0) {
+    packEvents();
+  }
+
+  return layouts;
+};
+
+/**
  * Get current time position on the calendar
  */
 export const getCurrentTimePosition = (currentTime, hourHeight) => {
@@ -44,13 +120,27 @@ export const getCurrentTimePosition = (currentTime, hourHeight) => {
  */
 export const getEventsForDay = (events, day) => {
   const { HOUR_START } = CALENDAR_CONFIG;
-  // Remove duplicates based on event ID
+  // Remove duplicates based on event ID (events on differents day can have same id, but in this case we want to keep them both)
   const uniqueEvents = Array.from(new Set(events.map((e) => e.id))).map((id) =>
     events.find((e) => e.id === id),
   );
 
+  // const uniqueEvents = events;
+
   return uniqueEvents.filter((event) => {
-    const isEventOnDay = isSameDay(event.start, day);
+    // Check if event occurs on the given day and starts within calendar hours
+    const isEventOnDay =
+      event.start <=
+        new Date(
+          day.getFullYear(),
+          day.getMonth(),
+          day.getDate(),
+          23,
+          59,
+          59,
+        ) &&
+      event.end >=
+        new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0);
     const eventStartHour = event.start.getHours();
     return isEventOnDay && eventStartHour >= HOUR_START;
   });
@@ -85,3 +175,11 @@ export const shouldShowTimeIndicator = (currentTime, isToday) => {
 export const formatHour = (hour) => {
   return `${hour}:00`;
 };
+
+/**
+ * Format enum to display string (e.g. "CourseType.Lecture" => "Lecture")
+ */
+
+export function eventTypeDisplay(type) {
+  return type.replace("CourseType.", "");
+}

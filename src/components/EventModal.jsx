@@ -1,11 +1,32 @@
 import React from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { X, Clock, MapPin, User, Tag, Users } from "lucide-react";
+import {
+  X,
+  Clock,
+  MapPin,
+  User,
+  Tag,
+  Users,
+  UserX,
+  CheckCircle2,
+} from "lucide-react";
+import { useAttendance } from "../context/AttendanceContext";
 import "./EventModal.css";
+import { eventTypeDisplay } from "../utils/calendarHelpers";
 
 const EventModal = ({ event, onClose }) => {
+  const {
+    isEventMissed,
+    isEventIgnored,
+    toggleMissedEvent,
+    toggleIgnoredEvent,
+  } = useAttendance();
+
   if (!event) return null;
+
+  const missed = isEventMissed(event.id);
+  const ignored = isEventIgnored(event.id);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -86,7 +107,9 @@ const EventModal = ({ event, onClose }) => {
               <Tag size={18} className="event-info-icon" />
               <div className="event-info-content">
                 <div className="event-info-label">Type</div>
-                <div className="event-info-value">{event.type}</div>
+                <div className="event-info-value">
+                  {eventTypeDisplay(event.type)}
+                </div>
               </div>
             </div>
           )}
@@ -109,6 +132,42 @@ const EventModal = ({ event, onClose }) => {
               <p className="event-description-text">{event.description}</p>
             </div>
           )}
+
+          <div className="attendance-actions">
+            <button
+              className={`attendance-action ${missed ? "active missed" : ""}`}
+              onClick={() => toggleMissedEvent(event.id)}
+            >
+              <div className="attendance-action-main">
+                {missed ? (
+                  <UserX size={18} className="attendance-action-icon" />
+                ) : (
+                  <CheckCircle2 size={18} className="attendance-action-icon" />
+                )}
+                <span>{missed ? "Cours marque absent" : "Marquer absent"}</span>
+              </div>
+              <span className="attendance-state-pill">
+                {missed ? "Actif" : "Off"}
+              </span>
+            </button>
+
+            <button
+              className={`attendance-action ${ignored ? "active ignored" : ""}`}
+              onClick={() => toggleIgnoredEvent(event.id)}
+            >
+              <div className="attendance-action-main">
+                <CheckCircle2 size={18} className="attendance-action-icon" />
+                <span>
+                  {ignored
+                    ? "Cours ignore (compensation)"
+                    : "Ignorer ce cours (compensation)"}
+                </span>
+              </div>
+              <span className="attendance-state-pill">
+                {ignored ? "Actif" : "Off"}
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="event-modal-footer">

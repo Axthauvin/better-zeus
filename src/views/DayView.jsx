@@ -14,6 +14,7 @@ import { useCurrentTime } from "../hooks/useCurrentTime";
 import {
   getEventStyle,
   getEventPosition,
+  getEventLayouts,
   getCurrentTimePosition,
   getEventsForDay,
   getCalendarHours,
@@ -30,6 +31,10 @@ const DayView = ({
   onDateChange,
   onViewChange,
   loading,
+  eventSearchQuery,
+  onEventSearchQueryChange,
+  theme,
+  onToggleTheme,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -56,6 +61,12 @@ const DayView = ({
     }
   };
 
+  const handleToday = () => {
+    const today = new Date();
+    setCurrentDate(today);
+    onDateChange(today, startOfDay(today), endOfDay(today));
+  };
+
   // Event handlers
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -80,10 +91,16 @@ const DayView = ({
       currentDate={currentDate}
       onPrevious={handlePrevious}
       onNext={handleNext}
+      onToday={handleToday}
       onDateChange={handleDateChange}
       headerTitle={headerTitle}
+      events={events}
       selectedEvent={selectedEvent}
       onCloseModal={handleCloseModal}
+      eventSearchQuery={eventSearchQuery}
+      onEventSearchQueryChange={onEventSearchQueryChange}
+      theme={theme}
+      onToggleTheme={onToggleTheme}
       className="day-calendar"
     >
       {/* Calendar Grid */}
@@ -144,28 +161,30 @@ const DayView = ({
                   <p>Aucun événement prévu ce jour</p>
                 </div>
               ) : (
-                dayEvents.map((event) => {
-                  const { top, height } = getEventPosition(
-                    event,
-                    CALENDAR_CONFIG.HOUR_HEIGHT,
-                  );
-                  const eventStyle = getEventStyle(event);
+                getEventLayouts(dayEvents, CALENDAR_CONFIG.HOUR_HEIGHT).map(
+                  ({ event, top, height, left, width }) => {
+                    const eventStyle = getEventStyle(event);
 
-                  return (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      eventStyle={{
-                        top: `${top}px`,
-                        height: `${height}px`,
-                        backgroundColor: eventStyle.bg,
-                        borderLeftColor: eventStyle.border,
-                        color: eventStyle.text,
-                      }}
-                      onClick={() => handleEventClick(event)}
-                    />
-                  );
-                })
+                    return (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        eventStyle={{
+                          top: `${top}px`,
+                          height: `${height}px`,
+                          left,
+                          width,
+                          right: "auto",
+                          position: "absolute",
+                          backgroundColor: eventStyle.bg,
+                          borderLeftColor: eventStyle.border,
+                          color: eventStyle.text,
+                        }}
+                        onClick={() => handleEventClick(event)}
+                      />
+                    );
+                  },
+                )
               )}
             </div>
           </div>

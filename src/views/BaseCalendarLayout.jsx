@@ -2,6 +2,7 @@ import React from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { MyDayPicker } from "../components/DayPicker";
+import { Search, Sun, Moon } from "lucide-react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -14,60 +15,73 @@ import EventModal from "../components/EventModal";
  * Provides common header, navigation, and view switching
  */
 const BaseCalendarLayout = ({
-  // View configuration
   view = "week",
   onViewChange,
-
-  // Date & Navigation
   currentDate,
   onPrevious,
   onNext,
+  onToday,
   onDateChange,
-
-  // Header display
   headerTitle,
   headerSubtitle,
   monthDay,
-
-  // Modal
+  eventSearchQuery = "",
+  onEventSearchQueryChange = () => {},
+  theme = "light",
+  onToggleTheme = () => {},
   selectedEvent,
   onCloseModal,
-
-  // Children (calendar grid content)
   children,
-
-  // Additional styling
   className = "",
 }) => {
   return (
     <div className={`calendar-view ${className}`}>
-      {/* Header */}
       <div className="calendar-header">
-        <div className="calendar-header-left">
-          <div className="calendar-date-info">
-            <div className="calendar-month-day">
-              <span className="month-label">
-                {format(currentDate, "MMM", { locale: fr }).toUpperCase()}
-              </span>
-              <span className="day-number">
-                {monthDay || format(currentDate, "d")}
-              </span>
+        <div className="calendar-header-main">
+          <div className="calendar-header-left">
+            <div className="calendar-date-info">
+              <div className="calendar-month-day">
+                <span className="month-label">
+                  {format(currentDate, "MMM", { locale: fr }).toUpperCase()}
+                </span>
+                <span className="day-number">
+                  {monthDay || format(currentDate, "d")}
+                </span>
+              </div>
+              <div className="calendar-title-info">
+                <h2>{headerTitle}</h2>
+                {headerSubtitle && <p>{headerSubtitle}</p>}
+              </div>
             </div>
-            <div className="calendar-title-info">
-              <h2>{headerTitle}</h2>
-              {headerSubtitle && <p>{headerSubtitle}</p>}
-            </div>
+          </div>
+
+          <div className="calendar-header-right">
+            <button
+              className="btn-icon btn-theme"
+              onClick={onToggleTheme}
+              aria-label={
+                theme === "dark"
+                  ? "Activer le theme clair"
+                  : "Activer le theme sombre"
+              }
+              title={theme === "dark" ? "Theme clair" : "Theme sombre"}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
         </div>
 
-        <div className="calendar-header-right">
+        <div className="calendar-toolbar">
           <div className="calendar-nav">
             <button
               className="btn-icon"
               onClick={onPrevious}
-              aria-label="Précédent"
+              aria-label="Precedent"
             >
               <ChevronLeftIcon />
+            </button>
+            <button className="btn-today" onClick={onToday}>
+              Aujourd'hui
             </button>
             <MyDayPicker
               value={currentDate}
@@ -82,7 +96,7 @@ const BaseCalendarLayout = ({
 
           <div className="view-dropdown">
             <button className="btn-view">
-              {view === "week" ? "Week view" : "Day view"}
+              {view === "week" ? "Semaine" : "Jour"}
               <ChevronDownIcon />
             </button>
             <div className="view-menu">
@@ -90,23 +104,31 @@ const BaseCalendarLayout = ({
                 onClick={() => onViewChange("week")}
                 className={view === "week" ? "active" : ""}
               >
-                Week view
+                Semaine
               </button>
               <button
                 onClick={() => onViewChange("day")}
                 className={view === "day" ? "active" : ""}
               >
-                Day view
+                Jour
               </button>
             </div>
+          </div>
+
+          <div className="calendar-search">
+            <Search size={14} />
+            <input
+              type="text"
+              placeholder="Rechercher un cours, prof, salle..."
+              value={eventSearchQuery}
+              onChange={(e) => onEventSearchQueryChange(e.target.value)}
+            />
           </div>
         </div>
       </div>
 
-      {/* Calendar Grid Content */}
       {children}
 
-      {/* Event Modal */}
       {selectedEvent && (
         <EventModal event={selectedEvent} onClose={onCloseModal} />
       )}

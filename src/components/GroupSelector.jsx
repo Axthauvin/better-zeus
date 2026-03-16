@@ -1,23 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { getUserGroups, logout } from "../api";
 import "./GroupSelector.css";
-import { Search, Trash, Plus } from "lucide-react";
-import { Check } from "lucide-react";
-import { LogOut } from "lucide-react";
+import { Search, Trash, Plus, Check, LogOut } from "lucide-react";
 
-const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
+const GroupSelector = ({
+  selectedGroups,
+  onGroupsChange,
+  availableRooms = [],
+  selectedRooms = [],
+  onRoomsChange = () => {},
+}) => {
   const [allGroups, setAllGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [selectionMode, setSelectionMode] = useState("groups");
+
+  const getHierarchyDepth = (groupPath) => {
+    if (!groupPath || typeof groupPath !== "string") return 0;
+    return groupPath.split("/").filter(Boolean).length;
+  };
+
+  const getHighestHierarchyGroup = () => {
+    const candidates = allGroups.filter(
+      (group) => group.id && group.name !== "0",
+    );
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    return [...candidates].sort((a, b) => {
+      const depthDiff = getHierarchyDepth(a.path) - getHierarchyDepth(b.path);
+      if (depthDiff !== 0) {
+        return depthDiff;
+      }
+      return String(a.name).localeCompare(String(b.name), "fr");
+    })[0];
+  };
 
   useEffect(() => {
-    // Récupérer les groupes au montage du composant
     const loadGroups = () => {
       try {
         setLoading(true);
         const groups = getUserGroups();
-        console.log("Groupes récupérés:", groups);
-        // Transformer les groupes pour avoir un format uniforme
         const formattedGroups = groups.map((group) => ({
           id: group.id || group.value?.id,
           name: group.name || group.value?.name || "Groupe sans nom",
@@ -34,12 +59,14 @@ const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
     loadGroups();
   }, []);
 
-  // Filtrer les groupes selon la recherche
   const filteredGroups = allGroups.filter((group) =>
     group.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  // Séparer les groupes sélectionnés et non sélectionnés
+  const filteredRooms = availableRooms.filter((room) =>
+    room.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   const selectedGroupsData = allGroups.filter((group) =>
     selectedGroups.includes(group.id),
   );
@@ -48,45 +75,61 @@ const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
     (group) => !selectedGroups.includes(group.id),
   );
 
-  // Gérer la sélection/désélection d'un groupe
+  const selectedRoomsData = availableRooms.filter((room) =>
+    selectedRooms.includes(room),
+  );
+
+  const unselectedFilteredRooms = filteredRooms.filter(
+    (room) => !selectedRooms.includes(room),
+  );
+
   const handleGroupToggle = (groupId) => {
     const isSelected = selectedGroups.includes(groupId);
-    let newSelectedGroups;
-
-    if (isSelected) {
-      // Désélectionner le groupe
-      newSelectedGroups = selectedGroups.filter((id) => id !== groupId);
-    } else {
-      // Sélectionner le groupe
-      newSelectedGroups = [...selectedGroups, groupId];
-    }
-
-    console.log("Groupes sélectionnés après toggle:", newSelectedGroups);
+    const newSelectedGroups = isSelected
+      ? selectedGroups.filter((id) => id !== groupId)
+      : [...selectedGroups, groupId];
 
     onGroupsChange(newSelectedGroups);
   };
 
-  // Sélectionner/désélectionner tous les groupes filtrés
-  const handleSelectAll = () => {
-    const allFilteredIds = filteredGroups.map((g) => g.id);
-    const allSelected = allFilteredIds.every((id) =>
-      selectedGroups.includes(id),
-    );
-
-    if (allSelected) {
-      // Désélectionner tous les groupes filtrés
-      const newSelectedGroups = selectedGroups.filter(
-        (id) => !allFilteredIds.includes(id),
-      );
-      onGroupsChange(newSelectedGroups);
-    } else {
-      // Sélectionner tous les groupes filtrés
-      const newSelectedGroups = [
-        ...new Set([...selectedGroups, ...allFilteredIds]),
-      ];
-      onGroupsChange(newSelectedGroups);
+  const handleRoomToggle = (roomName) => {
+    const highestHierarchyGroup = getHighestHierarchyGroup();
+    if (
+      highestHierarchyGroup &&
+      (selectedGroups.length !== 1 ||
+        selectedGroups[0] !== highestHierarchyGroup.id)
+    ) {
+      onGroupsChange([highestHierarchyGroup.id]);
     }
+
+    const isSelected = selectedRooms.includes(roomName);
+    const newSelectedRooms = isSelected
+      ? selectedRooms.filter((room) => room !== roomName)
+      : [...selectedRooms, roomName];
+
+    onRoomsChange(newSelectedRooms);
   };
+
+  useEffect(() => {
+    if (selectionMode !== "rooms") {
+      return;
+    }
+
+    const highestHierarchyGroup = getHighestHierarchyGroup();
+    if (!highestHierarchyGroup) {
+      return;
+    }
+
+    const alreadySelectedAsRootOnly =
+      selectedGroups.length === 1 &&
+      selectedGroups[0] === highestHierarchyGroup.id;
+
+    if (!alreadySelectedAsRootOnly) {
+      onGroupsChange([highestHierarchyGroup.id]);
+    }
+  }, [selectionMode, allGroups]);
+
+  const highestHierarchyGroup = getHighestHierarchyGroup();
 
   if (loading) {
     return (
@@ -135,13 +178,25 @@ const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
             <i>Better </i>
             {""}Zeus
           </h3>
-          {/* {selectedGroups.length > 0 && (
-            <span className="group-count">{selectedGroups.length}</span>
-          )} */}
           <button className="logout" onClick={logout}>
             <LogOut size={16} color="#667085" />
           </button>
         </div>
+      </div>
+
+      <div className="selector-mode-tabs">
+        <button
+          className={`mode-tab ${selectionMode === "groups" ? "active" : ""}`}
+          onClick={() => setSelectionMode("groups")}
+        >
+          Groupes
+        </button>
+        <button
+          className={`mode-tab ${selectionMode === "rooms" ? "active" : ""}`}
+          onClick={() => setSelectionMode("rooms")}
+        >
+          Salles
+        </button>
       </div>
 
       <div className="group-search">
@@ -149,23 +204,33 @@ const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
           <Search className="search-icon" size={16} strokeWidth={2} />
           <input
             type="text"
-            placeholder="Rechercher..."
+            placeholder={
+              selectionMode === "groups"
+                ? "Rechercher un groupe..."
+                : "Rechercher une salle..."
+            }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="group-search-input"
           />
         </div>
+        {selectionMode === "rooms" && highestHierarchyGroup && (
+          <p className="room-scope-hint">
+            Mode salle: scope auto sur le groupe racine "
+            {highestHierarchyGroup.name}".
+          </p>
+        )}
       </div>
 
       <div className="group-content">
-        {selectedGroupsData.length > 0 && (
+        {selectionMode === "groups" && selectedGroupsData.length > 0 && (
           <div className="selected-section">
             <div className="section-header">
-              <span className="section-title">Sélectionnés</span>
+              <span className="section-title">Selectionnes</span>
               <button
                 className="clear-all-btn"
                 onClick={() => onGroupsChange([])}
-                title="Tout désélectionner"
+                title="Tout deselelectionner"
               >
                 Effacer tout
               </button>
@@ -188,38 +253,92 @@ const GroupSelector = ({ selectedGroups, onGroupsChange }) => {
           </div>
         )}
 
+        {selectionMode === "rooms" && selectedRoomsData.length > 0 && (
+          <div className="selected-section">
+            <div className="section-header">
+              <span className="section-title">Salles selectionnees</span>
+              <button
+                className="clear-all-btn"
+                onClick={() => onRoomsChange([])}
+                title="Tout deselelectionner"
+              >
+                Effacer tout
+              </button>
+            </div>
+            <div className="selected-groups">
+              {selectedRoomsData.map((room) => (
+                <div key={room} className="selected-group-item">
+                  <Check color="#7f56d9" size={16} />
+                  <span className="group-name">{room}</span>
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRoomToggle(room)}
+                    title="Retirer"
+                  >
+                    <Trash size={16} color="#667085" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="all-groups-section">
           <div className="section-header">
-            <span className="section-title">Tous les groupes</span>
-            {/* {unselectedFilteredGroups.length > 0 && (
-              <button className="select-all-btn" onClick={handleSelectAll}>
-                Tout sélectionner
-              </button>
-            )} */}
+            <span className="section-title">
+              {selectionMode === "groups"
+                ? "Tous les groupes"
+                : "Toutes les salles"}
+            </span>
           </div>
           <div className="group-list">
-            {unselectedFilteredGroups.length === 0 &&
-            searchQuery === "" &&
-            selectedGroups.length === allGroups.length ? (
+            {selectionMode === "groups" ? (
+              unselectedFilteredGroups.length === 0 &&
+              searchQuery === "" &&
+              selectedGroups.length === allGroups.length ? (
+                <div className="no-groups">
+                  <p>Tous les groupes sont selectionnes</p>
+                </div>
+              ) : unselectedFilteredGroups.length === 0 ? (
+                <div className="no-groups">
+                  <p>Aucun groupe trouve</p>
+                </div>
+              ) : (
+                unselectedFilteredGroups.map((group) => (
+                  <div
+                    key={group.id}
+                    className="group-item"
+                    onClick={() => handleGroupToggle(group.id)}
+                  >
+                    <div className="group-info">
+                      <span className="group-name">{group.name}</span>
+                      {group.path && (
+                        <span className="group-path">{group.path}</span>
+                      )}
+                    </div>
+                    <button className="add-btn" title="Ajouter">
+                      <Plus size={16} strokeWidth={2} />
+                    </button>
+                  </div>
+                ))
+              )
+            ) : unselectedFilteredRooms.length === 0 ? (
               <div className="no-groups">
-                <p>Tous les groupes sont sélectionnés</p>
-              </div>
-            ) : unselectedFilteredGroups.length === 0 ? (
-              <div className="no-groups">
-                <p>Aucun groupe trouvé</p>
+                <p>
+                  {availableRooms.length === 0
+                    ? "Aucune salle detectee sur cette plage"
+                    : "Aucune salle trouvee"}
+                </p>
               </div>
             ) : (
-              unselectedFilteredGroups.map((group) => (
+              unselectedFilteredRooms.map((room) => (
                 <div
-                  key={group.id}
+                  key={room}
                   className="group-item"
-                  onClick={() => handleGroupToggle(group.id)}
+                  onClick={() => handleRoomToggle(room)}
                 >
                   <div className="group-info">
-                    <span className="group-name">{group.name}</span>
-                    {group.path && (
-                      <span className="group-path">{group.path}</span>
-                    )}
+                    <span className="group-name">{room}</span>
                   </div>
                   <button className="add-btn" title="Ajouter">
                     <Plus size={16} strokeWidth={2} />
