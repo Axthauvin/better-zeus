@@ -29,6 +29,7 @@ const CalendarContainer = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedGroups, setSelectedGroups] = useState(getSavedGroups() || []);
   const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectionMode, setSelectionMode] = useState("groups");
   const [eventSearchQuery, setEventSearchQuery] = useState("");
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("better-zeus-theme");
@@ -140,8 +141,15 @@ const CalendarContainer = () => {
   ).sort((a, b) => a.localeCompare(b, "fr"));
 
   const filteredEvents = events.filter((event) => {
+    const roomFilterEnabled = selectionMode === "rooms";
+    const hasSelectedRoom = selectedRooms.length > 0;
+
+    if (roomFilterEnabled && !hasSelectedRoom) {
+      return false;
+    }
+
     const roomMatch =
-      selectedRooms.length === 0 ||
+      !roomFilterEnabled ||
       event.rooms?.some((room) => selectedRooms.includes(room.name));
 
     if (!roomMatch) {
@@ -193,6 +201,7 @@ const CalendarContainer = () => {
         availableRooms={availableRooms}
         selectedRooms={selectedRooms}
         onRoomsChange={setSelectedRooms}
+        onSelectionModeChange={setSelectionMode}
       />
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         {view === "week" ? (

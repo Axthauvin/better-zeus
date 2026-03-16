@@ -9,11 +9,14 @@ const GroupSelector = ({
   availableRooms = [],
   selectedRooms = [],
   onRoomsChange = () => {},
+  onSelectionModeChange = () => {},
 }) => {
   const [allGroups, setAllGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectionMode, setSelectionMode] = useState("groups");
+  const [groupsSnapshotBeforeRooms, setGroupsSnapshotBeforeRooms] =
+    useState(null);
 
   const getHierarchyDepth = (groupPath) => {
     if (!groupPath || typeof groupPath !== "string") return 0;
@@ -103,11 +106,38 @@ const GroupSelector = ({
     }
 
     const isSelected = selectedRooms.includes(roomName);
-    const newSelectedRooms = isSelected
-      ? selectedRooms.filter((room) => room !== roomName)
-      : [...selectedRooms, roomName];
+    const newSelectedRooms = isSelected ? [] : [roomName];
 
     onRoomsChange(newSelectedRooms);
+  };
+
+  const handleSelectionMode = (nextMode) => {
+    if (nextMode === selectionMode) {
+      return;
+    }
+
+    if (nextMode === "rooms") {
+      setGroupsSnapshotBeforeRooms(selectedGroups);
+      setSelectionMode("rooms");
+      onSelectionModeChange("rooms");
+
+      const highestHierarchyGroup = getHighestHierarchyGroup();
+      if (
+        highestHierarchyGroup &&
+        (selectedGroups.length !== 1 ||
+          selectedGroups[0] !== highestHierarchyGroup.id)
+      ) {
+        onGroupsChange([highestHierarchyGroup.id]);
+      }
+      return;
+    }
+
+    setSelectionMode("groups");
+    onSelectionModeChange("groups");
+
+    if (groupsSnapshotBeforeRooms !== null) {
+      onGroupsChange(groupsSnapshotBeforeRooms);
+    }
   };
 
   useEffect(() => {
@@ -187,13 +217,13 @@ const GroupSelector = ({
       <div className="selector-mode-tabs">
         <button
           className={`mode-tab ${selectionMode === "groups" ? "active" : ""}`}
-          onClick={() => setSelectionMode("groups")}
+          onClick={() => handleSelectionMode("groups")}
         >
           Groupes
         </button>
         <button
           className={`mode-tab ${selectionMode === "rooms" ? "active" : ""}`}
-          onClick={() => setSelectionMode("rooms")}
+          onClick={() => handleSelectionMode("rooms")}
         >
           Salles
         </button>
