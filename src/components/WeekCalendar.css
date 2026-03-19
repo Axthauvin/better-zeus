@@ -585,6 +585,55 @@ body {
   color: #6b7280;
 }
 
+
+/* Custom Scrollbar */
+.calendar-grid-container,
+.day-calendar-grid-container {
+  scrollbar-width: thin;
+  scrollbar-color: #d0d5dd #ffffff;
+}
+
+.calendar-grid-container::-webkit-scrollbar,
+.day-calendar-grid-container::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.calendar-grid-container::-webkit-scrollbar-track,
+.day-calendar-grid-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.calendar-grid-container::-webkit-scrollbar-thumb,
+.day-calendar-grid-container::-webkit-scrollbar-thumb {
+  background: #d0d5dd;
+  border-radius: 5px;
+  border: 2px solid #ffffff;
+}
+
+.calendar-grid-container::-webkit-scrollbar-thumb:hover,
+.day-calendar-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #98a2b3;
+}
+
+/* Dark mode scrollbar */
+[data-theme="dark"] .calendar-grid-container,
+[data-theme="dark"] .day-calendar-grid-container {
+  scrollbar-width: thin;
+  scrollbar-color: #374151 #020617;
+}
+
+[data-theme="dark"] .calendar-grid-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .day-calendar-grid-container::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-color: #020617;
+}
+
+[data-theme="dark"] .calendar-grid-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .day-calendar-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .calendar-header-right {

@@ -25,6 +25,8 @@ import {
 import { CALENDAR_CONFIG } from "../utils/calendarConstants";
 import "../components/WeekCalendar.css";
 
+const INITIAL_SCROLL_HOUR = 6;
+
 const WeekView = ({
   events = [],
   currentDate,
@@ -39,6 +41,15 @@ const WeekView = ({
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const scrollRef = React.useRef(null);
+
+  // Scroll to the initial hour on mount
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      const { HOUR_HEIGHT } = CALENDAR_CONFIG;
+      scrollRef.current.scrollTop = INITIAL_SCROLL_HOUR * HOUR_HEIGHT;
+    }
+  }, []);
 
   const weekStart = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
   const weekEnd = endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
@@ -130,7 +141,7 @@ const WeekView = ({
       className="week-calendar"
     >
       {/* Calendar Grid */}
-      <div className="calendar-grid-container">
+      <div className="calendar-grid-container" ref={scrollRef}>
         {/* Time column */}
         <div className="time-column">
           <div className="time-header"></div>
@@ -241,7 +252,7 @@ const WeekView = ({
                     style={{ left: `${dayIndex * (100 / 7)}%` }}
                   >
                     {eventLayouts.map(({ event, top, height, left, width }) => {
-                      const eventStyle = getEventStyle(event);
+                      const eventStyle = getEventStyle(event, theme);
                       return (
                         <EventCard
                           key={event.id}
