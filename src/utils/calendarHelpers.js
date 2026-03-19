@@ -8,8 +8,18 @@ import {
 /**
  * Get event style based on event color
  */
-export const getEventStyle = (event) => {
-  return EVENT_COLOR_MAP[event.color] || DEFAULT_EVENT_STYLE;
+export const getEventStyle = (event, theme = "light") => {
+  const style = EVENT_COLOR_MAP[event.color] || DEFAULT_EVENT_STYLE;
+  if (theme === "dark") {
+    return {
+      ...style,
+      // More opaque background in dark mode for better separation
+      bg: style.bg.replace("0.12", "0.2"),
+      // Always white/light text in dark mode for contrast
+      text: "#FFFFFF",
+    };
+  }
+  return style;
 };
 
 /**
@@ -116,10 +126,9 @@ export const getCurrentTimePosition = (currentTime, hourHeight) => {
 };
 
 /**
- * Filter events for a specific day that are within the calendar hours
+ * Filter events for a specific day that overlap that day's time range
  */
 export const getEventsForDay = (events, day) => {
-  const { HOUR_START } = CALENDAR_CONFIG;
   // Remove duplicates based on event ID (events on differents day can have same id, but in this case we want to keep them both)
   const uniqueEvents = Array.from(new Set(events.map((e) => e.id))).map((id) =>
     events.find((e) => e.id === id),
@@ -128,7 +137,7 @@ export const getEventsForDay = (events, day) => {
   // const uniqueEvents = events;
 
   return uniqueEvents.filter((event) => {
-    // Check if event occurs on the given day and starts within calendar hours
+    // Check if event occurs on the given day (overlaps any time within that day)
     const isEventOnDay =
       event.start <=
         new Date(
@@ -141,11 +150,7 @@ export const getEventsForDay = (events, day) => {
         ) &&
       event.end >=
         new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0);
-    const eventStartHour = event.start.getHours();
-    return (
-      (isEventOnDay && eventStartHour >= HOUR_START) ||
-      (event.title === "Férié" && isEventOnDay)
-    );
+    return isEventOnDay;
   });
 };
 

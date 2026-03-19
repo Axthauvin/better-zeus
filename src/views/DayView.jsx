@@ -38,6 +38,17 @@ const DayView = ({
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const scrollRef = React.useRef(null);
+
+  // Scroll to default hour (configurable, defaults to 6am) on mount
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      const { HOUR_HEIGHT, DEFAULT_SCROLL_HOUR } = CALENDAR_CONFIG;
+      const initialScrollHour =
+        typeof DEFAULT_SCROLL_HOUR === "number" ? DEFAULT_SCROLL_HOUR : 6;
+      scrollRef.current.scrollTop = initialScrollHour * HOUR_HEIGHT;
+    }
+  }, []);
 
   const hours = getCalendarHours();
 
@@ -104,7 +115,7 @@ const DayView = ({
       className="day-calendar"
     >
       {/* Calendar Grid */}
-      <div className="day-calendar-grid-container">
+      <div className="day-calendar-grid-container" ref={scrollRef}>
         {/* Time column */}
         <div className="time-column">
           <div className="time-header"></div>
@@ -163,7 +174,7 @@ const DayView = ({
               ) : (
                 getEventLayouts(dayEvents, CALENDAR_CONFIG.HOUR_HEIGHT).map(
                   ({ event, top, height, left, width }) => {
-                    const eventStyle = getEventStyle(event);
+                    const eventStyle = getEventStyle(event, theme);
 
                     return (
                       <EventCard
