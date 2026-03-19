@@ -126,10 +126,9 @@ export const getCurrentTimePosition = (currentTime, hourHeight) => {
 };
 
 /**
- * Filter events for a specific day that are within the calendar hours
+ * Filter events for a specific day that overlap that day's time range
  */
 export const getEventsForDay = (events, day) => {
-  const { HOUR_START } = CALENDAR_CONFIG;
   // Remove duplicates based on event ID (events on differents day can have same id, but in this case we want to keep them both)
   const uniqueEvents = Array.from(new Set(events.map((e) => e.id))).map((id) =>
     events.find((e) => e.id === id),
@@ -138,7 +137,7 @@ export const getEventsForDay = (events, day) => {
   // const uniqueEvents = events;
 
   return uniqueEvents.filter((event) => {
-    // Check if event occurs on the given day and starts within calendar hours
+    // Check if event occurs on the given day (overlaps any time within that day)
     const isEventOnDay =
       event.start <=
         new Date(
