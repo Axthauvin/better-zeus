@@ -159,7 +159,7 @@ export function MyDayPicker({ value, onChange, locale, mode = "single" }) {
     <div className="day-picker-container">
       <button onClick={() => setOpened(!opened)} className="btn-select-event">
         <Calendar className="calendar-icon" />
-        {formatDisplayDate()}
+        <span className="day-picker-button-label">{formatDisplayDate()}</span>
       </button>
 
       {opened && (

@@ -5,6 +5,24 @@
   gap: 0;
 }
 
+.day-picker-container .btn-select-event {
+  width: 220px;
+  justify-content: flex-start;
+}
+
+.day-picker-container .calendar-icon {
+  flex-shrink: 0;
+}
+
+.day-picker-button-label {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .day-picker-presets {
   display: flex;
   flex-direction: column;
