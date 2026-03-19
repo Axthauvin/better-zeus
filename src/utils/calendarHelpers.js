@@ -8,8 +8,18 @@ import {
 /**
  * Get event style based on event color
  */
-export const getEventStyle = (event) => {
-  return EVENT_COLOR_MAP[event.color] || DEFAULT_EVENT_STYLE;
+export const getEventStyle = (event, theme = "light") => {
+  const style = EVENT_COLOR_MAP[event.color] || DEFAULT_EVENT_STYLE;
+  if (theme === "dark") {
+    return {
+      ...style,
+      // More opaque background in dark mode for better separation
+      bg: style.bg.replace("0.12", "0.2"),
+      // Always white/light text in dark mode for contrast
+      text: "#FFFFFF",
+    };
+  }
+  return style;
 };
 
 /**

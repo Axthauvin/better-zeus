@@ -172,7 +172,7 @@ const DayView = ({
               ) : (
                 getEventLayouts(dayEvents, CALENDAR_CONFIG.HOUR_HEIGHT).map(
                   ({ event, top, height, left, width }) => {
-                    const eventStyle = getEventStyle(event);
+                    const eventStyle = getEventStyle(event, theme);
 
                     return (
                       <EventCard

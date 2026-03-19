@@ -250,7 +250,7 @@ const WeekView = ({
                     style={{ left: `${dayIndex * (100 / 7)}%` }}
                   >
                     {eventLayouts.map(({ event, top, height, left, width }) => {
-                      const eventStyle = getEventStyle(event);
+                      const eventStyle = getEventStyle(event, theme);
                       return (
                         <EventCard
                           key={event.id}
