@@ -139,6 +139,18 @@ function showCalendar() {
     body.appendChild(container);
   }
 
+  // Ensure the container fills the viewport and prevents body scrolling
+  Object.assign(container.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100vh",
+    zIndex: "9999",
+    overflow: "hidden",
+    backgroundColor: "#ffffff",
+  });
+
   /* Hide Zeus root element if present */
   const zeusRoot = document.querySelector("zeus-root");
   if (zeusRoot) zeusRoot.style.display = "none";

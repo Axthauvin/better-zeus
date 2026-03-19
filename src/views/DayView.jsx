@@ -38,6 +38,15 @@ const DayView = ({
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const scrollRef = React.useRef(null);
+
+  // Scroll to 6am on mount
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      const { HOUR_HEIGHT } = CALENDAR_CONFIG;
+      scrollRef.current.scrollTop = 6 * HOUR_HEIGHT;
+    }
+  }, []);
 
   const hours = getCalendarHours();
 
@@ -104,7 +113,7 @@ const DayView = ({
       className="day-calendar"
     >
       {/* Calendar Grid */}
-      <div className="day-calendar-grid-container">
+      <div className="day-calendar-grid-container" ref={scrollRef}>
         {/* Time column */}
         <div className="time-column">
           <div className="time-header"></div>

@@ -39,6 +39,15 @@ const WeekView = ({
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const scrollRef = React.useRef(null);
+
+  // Scroll to 6am on mount
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      const { HOUR_HEIGHT } = CALENDAR_CONFIG;
+      scrollRef.current.scrollTop = 6 * HOUR_HEIGHT;
+    }
+  }, []);
 
   const weekStart = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
   const weekEnd = endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
@@ -130,7 +139,7 @@ const WeekView = ({
       className="week-calendar"
     >
       {/* Calendar Grid */}
-      <div className="calendar-grid-container">
+      <div className="calendar-grid-container" ref={scrollRef}>
         {/* Time column */}
         <div className="time-column">
           <div className="time-header"></div>
