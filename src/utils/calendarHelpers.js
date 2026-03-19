@@ -142,7 +142,10 @@ export const getEventsForDay = (events, day) => {
       event.end >=
         new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0);
     const eventStartHour = event.start.getHours();
-    return isEventOnDay && eventStartHour >= HOUR_START;
+    return (
+      (isEventOnDay && eventStartHour >= HOUR_START) ||
+      (event.title === "Férié" && isEventOnDay)
+    );
   });
 };
 

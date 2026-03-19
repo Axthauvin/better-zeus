@@ -193,8 +193,45 @@ const WeekView = ({
             <div className="events-container">
               {weekDays.map((day, dayIndex) => {
                 const dayEvents = getEventsForDay(events, day);
+
+                const endOfDay = new Date(
+                  day.getFullYear(),
+                  day.getMonth(),
+                  day.getDate(),
+                  23,
+                  59,
+                  59,
+                );
+
+                // clamp events  to the actual day range (in case of events spanning multiple days)
+                const clampedEvents = dayEvents.map((event) => {
+                  // start must be clamped to HOUR_START of the day
+                  const eventStart =
+                    event.start <
+                    new Date(
+                      day.getFullYear(),
+                      day.getMonth(),
+                      day.getDate(),
+                      CALENDAR_CONFIG.HOUR_START,
+                      0,
+                      0,
+                    )
+                      ? new Date(
+                          day.getFullYear(),
+                          day.getMonth(),
+                          day.getDate(),
+                          CALENDAR_CONFIG.HOUR_START,
+                          0,
+                          0,
+                        )
+                      : event.start;
+                  // end must be clamped to end of the day
+                  const eventEnd = event.end > endOfDay ? endOfDay : event.end;
+                  return { ...event, start: eventStart, end: eventEnd };
+                });
+
                 const eventLayouts = getEventLayouts(
-                  dayEvents,
+                  clampedEvents,
                   CALENDAR_CONFIG.HOUR_HEIGHT,
                 );
                 return (

@@ -79,6 +79,7 @@ function getColorForEventType(type) {
     "CourseType.TD": "#EC4899",
     "CourseType.Permanence": "#F59E0B",
     "CourseType.Exam": "#EF4444",
+    "CourseType.FollowUp": "#5cf1f6",
   };
 
   return typeColors[type] || "#7C3AED";

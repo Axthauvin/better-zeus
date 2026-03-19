@@ -57,6 +57,11 @@ export const EVENT_COLOR_MAP = {
     border: "#14B8A6",
     text: "#0F766E",
   },
+  "#5cf1f6": {
+    bg: "rgba(92, 241, 246, 0.12)",
+    border: "#5cf1f6",
+    text: "#0ABAB5",
+  },
 };
 
 // Default color style
