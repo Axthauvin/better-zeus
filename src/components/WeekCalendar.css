@@ -587,6 +587,12 @@ body {
 
 
 /* Custom Scrollbar */
+.calendar-grid-container,
+.day-calendar-grid-container {
+  scrollbar-width: thin;
+  scrollbar-color: #d0d5dd #ffffff;
+}
+
 .calendar-grid-container::-webkit-scrollbar,
 .day-calendar-grid-container::-webkit-scrollbar {
   width: 10px;
@@ -611,6 +617,12 @@ body {
 }
 
 /* Dark mode scrollbar */
+[data-theme="dark"] .calendar-grid-container,
+[data-theme="dark"] .day-calendar-grid-container {
+  scrollbar-width: thin;
+  scrollbar-color: #374151 #020617;
+}
+
 [data-theme="dark"] .calendar-grid-container::-webkit-scrollbar-thumb,
 [data-theme="dark"] .day-calendar-grid-container::-webkit-scrollbar-thumb {
   background: #374151;

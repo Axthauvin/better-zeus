@@ -131,6 +131,7 @@ function showCalendar() {
   container.id = "better-zeus-calendar";
 
   const body = document.body;
+  const previousBodyOverflow = body.style.overflow;
 
   // Insert at the beginning of the main content
   if (body.firstChild) {
@@ -150,6 +151,16 @@ function showCalendar() {
     overflow: "hidden",
     backgroundColor: "#ffffff",
   });
+
+  // Lock body scroll while the calendar overlay is shown
+  body.style.overflow = "hidden";
+
+  // Restore body overflow when the page is unloaded
+  function restoreBodyOverflow() {
+    body.style.overflow = previousBodyOverflow;
+    window.removeEventListener("beforeunload", restoreBodyOverflow);
+  }
+  window.addEventListener("beforeunload", restoreBodyOverflow);
 
   /* Hide Zeus root element if present */
   const zeusRoot = document.querySelector("zeus-root");

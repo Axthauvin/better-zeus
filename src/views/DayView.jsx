@@ -40,11 +40,13 @@ const DayView = ({
   const [selectedEvent, setSelectedEvent] = useState(null);
   const scrollRef = React.useRef(null);
 
-  // Scroll to 6am on mount
+  // Scroll to default hour (configurable, defaults to 6am) on mount
   React.useEffect(() => {
     if (scrollRef.current) {
-      const { HOUR_HEIGHT } = CALENDAR_CONFIG;
-      scrollRef.current.scrollTop = 6 * HOUR_HEIGHT;
+      const { HOUR_HEIGHT, DEFAULT_SCROLL_HOUR } = CALENDAR_CONFIG;
+      const initialScrollHour =
+        typeof DEFAULT_SCROLL_HOUR === "number" ? DEFAULT_SCROLL_HOUR : 6;
+      scrollRef.current.scrollTop = initialScrollHour * HOUR_HEIGHT;
     }
   }, []);
 

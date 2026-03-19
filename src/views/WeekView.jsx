@@ -25,6 +25,8 @@ import {
 import { CALENDAR_CONFIG } from "../utils/calendarConstants";
 import "../components/WeekCalendar.css";
 
+const INITIAL_SCROLL_HOUR = 6;
+
 const WeekView = ({
   events = [],
   currentDate,
@@ -41,11 +43,11 @@ const WeekView = ({
   const [selectedEvent, setSelectedEvent] = useState(null);
   const scrollRef = React.useRef(null);
 
-  // Scroll to 6am on mount
+  // Scroll to the initial hour on mount
   React.useEffect(() => {
     if (scrollRef.current) {
       const { HOUR_HEIGHT } = CALENDAR_CONFIG;
-      scrollRef.current.scrollTop = 6 * HOUR_HEIGHT;
+      scrollRef.current.scrollTop = INITIAL_SCROLL_HOUR * HOUR_HEIGHT;
     }
   }, []);
 
