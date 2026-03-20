@@ -106,11 +106,8 @@ jobs:
 
             ### Chrome/Edge/Brave
             1. Download `better-zeus-chrome.zip`
-            2. Extract the ZIP file
-            3. Open `chrome://extensions/` (or `edge://extensions/`)
-            4. Enable **Developer mode**
-            5. Click **Load unpacked**
-            6. Select the extracted folder
+            2. Open `chrome://extensions/` (or `edge://extensions/`)
+            3. Simply **drag and drop** the file into Chrome
 
             ### Firefox
             1. Download `better-zeus-firefox.xpi`
