@@ -99,7 +99,13 @@ export function transformApiDataToEvents(apiData) {
     location: item.rooms ? item.rooms.map((r) => r.name).join(", ") : "",
     teacher:
       item.teachers && item.teachers.length > 0
-        ? item.teachers.map((t) => t.name).join(", ")
+        ? item.teachers
+            .map((t) =>
+              t.firstname && t.name
+                ? `${t.firstname} ${t.name}`
+                : t.name || t.firstname || "",
+            )
+            .join(", ")
         : "",
     type: item.typeName || "",
     groups: item.groups ? item.groups.map((g) => g.name) : [],
