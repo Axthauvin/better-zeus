@@ -144,7 +144,7 @@ const EventModal = ({ event, onClose }) => {
                 ) : (
                   <CheckCircle2 size={18} className="attendance-action-icon" />
                 )}
-                <span>{missed ? "Cours marque absent" : "Marquer absent"}</span>
+                <span>{missed ? "Cours marqué absent" : "Marquer absent"}</span>
               </div>
               <span className="attendance-state-pill">
                 {missed ? "Actif" : "Off"}

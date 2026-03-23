@@ -96,7 +96,7 @@ export function transformApiDataToEvents(apiData) {
     end: new Date(item.endDate || item.end),
     color: getColorForEventType(item.typeName),
     description: item.description || "",
-    location: item.rooms && item.rooms.length > 0 ? item.rooms[0].name : "",
+    location: item.rooms ? item.rooms.map((r) => r.name).join(", ") : "",
     teacher:
       item.teachers && item.teachers.length > 0
         ? item.teachers.map((t) => t.name).join(", ")
