@@ -163,6 +163,12 @@ const CalendarContainer = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  const handleSelectionModeChange = (newMode) => {
+    setSelectionMode(newMode);
+    // Clear events to prevent flickering when switching modes
+    setEvents([]);
+  };
+
   const availableRooms = Array.from(
     new Set(
       events
