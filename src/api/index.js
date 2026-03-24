@@ -70,6 +70,37 @@ export async function fetchTimeTable(
   }
 }
 
+export async function fetchReservationDetails(reservationId) {
+  if (!reservationId) {
+    throw new Error("No reservationId provided");
+  }
+
+  try {
+    const authToken = getAuth();
+    if (!authToken) {
+      throw new Error("No auth token available");
+    }
+
+    const response = await fetch(
+      `https://zeus.ionis-it.com/api/reservation/${reservationId}/details`,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching reservation details:", error);
+    throw error;
+  }
+}
+
 function getColorForEventType(type) {
   const typeColors = {
     "CourseType.Lecture": "#7C3AED",

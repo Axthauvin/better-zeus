@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
@@ -8,12 +8,15 @@ import {
   User,
   Tag,
   Users,
-  UserX,
-  CheckCircle2,
-} from "lucide-react";
+   UserX,
+   CheckCircle2,
+   Video,
+   ExternalLink,
+ } from "lucide-react";
 import { useAttendance } from "../context/AttendanceContext";
 import "./EventModal.css";
 import { eventTypeDisplay } from "../utils/calendarHelpers";
+import { fetchReservationDetails } from "../api";
 
 const EventModal = ({ event, onClose }) => {
   const {
@@ -22,6 +25,27 @@ const EventModal = ({ event, onClose }) => {
     toggleMissedEvent,
     toggleIgnoredEvent,
   } = useAttendance();
+
+  const [details, setDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  useEffect(() => {
+    const getDetails = async () => {
+      if (event && event.id) {
+        setLoadingDetails(true);
+        try {
+          const data = await fetchReservationDetails(event.id);
+          setDetails(data);
+        } catch (error) {
+          console.error("Failed to fetch event details:", error);
+        } finally {
+          setLoadingDetails(false);
+        }
+      }
+    };
+
+    getDetails();
+  }, [event?.id]);
 
   if (!event) return null;
 
@@ -109,6 +133,25 @@ const EventModal = ({ event, onClose }) => {
                 <div className="event-info-label">Type</div>
                 <div className="event-info-value">
                   {eventTypeDisplay(event.type)}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {details?.url && (
+            <div className="event-info-item online-url">
+              <Video size={18} className="event-info-icon" />
+              <div className="event-info-content">
+                <div className="event-info-label">Lien de connexion</div>
+                <div className="event-info-value">
+                  <a
+                    href={details.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="online-link"
+                  >
+                    Rejoindre le cours <ExternalLink size={14} style={{ marginLeft: '4px' }} />
+                  </a>
                 </div>
               </div>
             </div>
