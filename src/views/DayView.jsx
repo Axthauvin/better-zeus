@@ -35,6 +35,7 @@ const DayView = ({
   onEventSearchQueryChange,
   theme,
   onToggleTheme,
+  onToggleSidebar,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -112,6 +113,7 @@ const DayView = ({
       onEventSearchQueryChange={onEventSearchQueryChange}
       theme={theme}
       onToggleTheme={onToggleTheme}
+      onToggleSidebar={onToggleSidebar}
       className="day-calendar"
     >
       {/* Calendar Grid */}
