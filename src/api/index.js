@@ -70,6 +70,37 @@ export async function fetchTimeTable(
   }
 }
 
+export async function fetchReservationDetails(reservationId) {
+  if (!reservationId) {
+    throw new Error("No reservationId provided");
+  }
+
+  try {
+    const authToken = getAuth();
+    if (!authToken) {
+      throw new Error("No auth token available");
+    }
+
+    const response = await fetch(
+      `https://zeus.ionis-it.com/api/reservation/${reservationId}/details`,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching reservation details:", error);
+    throw error;
+  }
+}
+
 function getColorForEventType(type) {
   const typeColors = {
     "CourseType.Lecture": "#7C3AED",
@@ -96,14 +127,21 @@ export function transformApiDataToEvents(apiData) {
     end: new Date(item.endDate || item.end),
     color: getColorForEventType(item.typeName),
     description: item.description || "",
-    location: item.rooms && item.rooms.length > 0 ? item.rooms[0].name : "",
+    location: item.rooms ? item.rooms.map((r) => r.name).join(", ") : "",
     teacher:
       item.teachers && item.teachers.length > 0
-        ? item.teachers.map((t) => t.name).join(", ")
+        ? item.teachers
+          .map((t) =>
+            t.firstname && t.name
+              ? `${t.firstname} ${t.name}`
+              : t.name || t.firstname || "",
+          )
+          .join(", ")
         : "",
     type: item.typeName || "",
     groups: item.groups ? item.groups.map((g) => g.name) : [],
     rooms: item.rooms || [],
+    isOnline: item.isOnline || false,
   }));
 }
 
@@ -211,6 +249,15 @@ export function getSavedView() {
 
 export function saveView(view) {
   localStorage.setItem("better-zeus-calendar-view", view);
+}
+
+export function getEnabledGroups() {
+  const enabledGroups = localStorage.getItem("better-zeus-enabled-groups");
+  return enabledGroups ? JSON.parse(enabledGroups) : null;
+}
+
+export function saveEnabledGroups(groups) {
+  localStorage.setItem("better-zeus-enabled-groups", JSON.stringify(groups));
 }
 
 export function logout() {

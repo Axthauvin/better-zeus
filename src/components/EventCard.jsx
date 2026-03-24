@@ -1,6 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
 import { useAttendance } from "../context/AttendanceContext";
+import { Video } from "lucide-react";
 import "./EventCard.css";
 
 const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
@@ -34,7 +35,10 @@ const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
         {duration <= 60 ? (
           <>
             {hasTitle ? (
-              <div className="event-card-title">{event.title}</div>
+              <div className="event-card-title">
+                {event.isOnline && <Video size={12} className="online-badge-icon" />}
+                {event.title}
+              </div>
             ) : (
               <div className="event-card-title">
                 {event.location
@@ -46,7 +50,12 @@ const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
         ) : (
           /* Pour les événements plus longs, afficher toutes les infos */
           <>
-            {hasTitle && <div className="event-card-title">{event.title}</div>}
+            {hasTitle && (
+              <div className="event-card-title">
+                {event.isOnline && <Video size={14} className="online-badge-icon" />}
+                {event.title}
+              </div>
+            )}
 
             <div className="event-card-time">
               {format(event.start, "HH:mm")} - {format(event.end, "HH:mm")}

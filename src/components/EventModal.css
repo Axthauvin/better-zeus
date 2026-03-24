@@ -375,6 +375,28 @@
   color: #a5f3fc;
 }
 
+.online-link {
+  display: inline-flex;
+  align-items: center;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.online-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .online-link {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .online-link:hover {
+  color: #93c5fd;
+}
+
 @media (max-width: 640px) {
   .event-modal {
     max-width: 100%;

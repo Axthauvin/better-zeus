@@ -70,6 +70,13 @@
   -webkit-box-orient: vertical;
 }
 
+.online-badge-icon {
+  margin-right: 4px;
+  vertical-align: middle;
+  display: inline-block;
+  opacity: 0.9;
+}
+
 .event-card-time {
   font-size: 11px;
   color: inherit;
