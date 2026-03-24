@@ -141,6 +141,7 @@ export function transformApiDataToEvents(apiData) {
     type: item.typeName || "",
     groups: item.groups ? item.groups.map((g) => g.name) : [],
     rooms: item.rooms || [],
+    isOnline: item.isOnline || false,
   }));
 }
 
