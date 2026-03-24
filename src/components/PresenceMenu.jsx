@@ -172,6 +172,7 @@ const PresenceMenu = () => {
               className="presence-date-input"
               value={semesterStartDate}
               onChange={(e) => setSemesterStartDate(e.target.value)}
+              max={new Date().toISOString().split("T")[0]}
             />
           </div>
 

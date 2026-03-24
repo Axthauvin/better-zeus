@@ -401,6 +401,7 @@
   background: #111827;
   border-color: #374151;
   color: #e5e7eb;
+  color-scheme: dark;
 }
 
 [data-theme='dark'] .chevron-icon {
