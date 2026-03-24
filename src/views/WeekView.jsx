@@ -38,6 +38,7 @@ const WeekView = ({
   onEventSearchQueryChange,
   theme,
   onToggleTheme,
+  onToggleSidebar,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -138,6 +139,7 @@ const WeekView = ({
       onEventSearchQueryChange={onEventSearchQueryChange}
       theme={theme}
       onToggleTheme={onToggleTheme}
+      onToggleSidebar={onToggleSidebar}
       className="week-calendar"
     >
       {/* Calendar Grid */}

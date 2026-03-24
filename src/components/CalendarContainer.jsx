@@ -20,6 +20,7 @@ import { fr } from "date-fns/locale";
 import BaseCalendarLayout from "../views/BaseCalendarLayout";
 import WeekView from "../views/WeekView";
 import DayView from "../views/DayView";
+import "./CalendarContainer.css";
 
 const CalendarContainer = () => {
   const [view, setView] = useState(getSavedView());
@@ -41,6 +42,7 @@ const CalendarContainer = () => {
       ? "dark"
       : "light";
   });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("better-zeus-theme", theme);
@@ -190,20 +192,28 @@ const CalendarContainer = () => {
 
   return (
     <div
-      style={{ display: "flex", height: "100%" }}
+      className={`calendar-container ${isSidebarOpen ? "sidebar-open" : ""}`}
       onKeyDown={handleArrowKeyDown}
       tabIndex={0}
       data-theme={theme}
     >
-      <GroupSelector
-        selectedGroups={selectedGroups}
-        onGroupsChange={handleGroupsChange}
-        availableRooms={availableRooms}
-        selectedRooms={selectedRooms}
-        onRoomsChange={setSelectedRooms}
-        onSelectionModeChange={setSelectionMode}
+      <div
+        className={`sidebar-backdrop ${isSidebarOpen ? "visible" : ""}`}
+        onClick={() => setIsSidebarOpen(false)}
       />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+
+      <aside className={`sidebar-shell ${isSidebarOpen ? "open" : ""}`}>
+        <GroupSelector
+          selectedGroups={selectedGroups}
+          onGroupsChange={handleGroupsChange}
+          availableRooms={availableRooms}
+          selectedRooms={selectedRooms}
+          onRoomsChange={setSelectedRooms}
+          onSelectionModeChange={setSelectionMode}
+        />
+      </aside>
+
+      <div className="calendar-main">
         {view === "week" ? (
           <WeekView
             events={filteredEvents}
@@ -216,6 +226,7 @@ const CalendarContainer = () => {
             theme={theme}
             eventSearchQuery={eventSearchQuery}
             onEventSearchQueryChange={setEventSearchQuery}
+            onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
           />
         ) : (
           <DayView
@@ -229,6 +240,7 @@ const CalendarContainer = () => {
             theme={theme}
             eventSearchQuery={eventSearchQuery}
             onEventSearchQueryChange={setEventSearchQuery}
+            onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
           />
         )}
 

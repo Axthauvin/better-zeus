@@ -58,8 +58,14 @@
   background: #f9fafb;
   border: 1px solid #eaecf0;
   border-radius: 10px;
-  color: #101828;
+  /* color: #101828; */
   flex-shrink: 0;
+}
+
+[data-theme="dark"] .header-icon {
+  background: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
 }
 
 .header-content {

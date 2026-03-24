@@ -2,7 +2,7 @@ import React from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { MyDayPicker } from "../components/DayPicker";
-import { Search, Sun, Moon } from "lucide-react";
+import { Search, Sun, Moon, Menu, Github } from "lucide-react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -29,6 +29,7 @@ const BaseCalendarLayout = ({
   onEventSearchQueryChange = () => {},
   theme = "light",
   onToggleTheme = () => {},
+  onToggleSidebar = () => {},
   selectedEvent,
   onCloseModal,
   children,
@@ -56,6 +57,24 @@ const BaseCalendarLayout = ({
           </div>
 
           <div className="calendar-header-right">
+            <button
+              className="btn-icon btn-sidebar-toggle"
+              onClick={onToggleSidebar}
+              aria-label="Ouvrir le menu"
+              title="Menu"
+            >
+              <Menu size={18} />
+            </button>
+            <a
+              className="btn-icon btn-github"
+              href="https://github.com/Axthauvin/better-zeus"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Ouvrir le depot GitHub"
+              title="GitHub"
+            >
+              <Github size={18} />
+            </a>
             <button
               className="btn-icon btn-theme"
               onClick={onToggleTheme}

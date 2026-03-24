@@ -328,6 +328,63 @@
   overflow: hidden;
 }
 
+@media (max-width: 720px) {
+  .day-picker-content {
+    flex-direction: column;
+    min-width: min(92vw, 360px);
+  }
+
+  .day-picker-presets {
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .preset-button {
+    border: 1px solid #e5e7eb;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  .day-picker-calendar {
+    padding: 12px;
+  }
+
+  .day-picker-container .btn-select-event {
+    width: min(58vw, 200px);
+  }
+
+  .rdp {
+    --rdp-cell-size: 38px;
+  }
+}
+
+@media (max-height: 820px), (max-aspect-ratio: 11/10) {
+  .day-picker-modal {
+    max-height: 84vh;
+  }
+
+  .day-picker-presets {
+    padding: 10px 12px;
+  }
+
+  .day-picker-calendar {
+    padding: 12px 14px;
+  }
+
+  .rdp {
+    --rdp-cell-size: 36px;
+  }
+
+  .rdp-caption {
+    padding-bottom: 12px;
+  }
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
