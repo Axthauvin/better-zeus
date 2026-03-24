@@ -89,14 +89,3 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     checkForUpdates();
   }
 });
-
-// Run once when the background script starts up
-checkForUpdates();
-
-// Check periodically in the background
-chrome.alarms.create("checkBetterZeusUpdates", { delayInMinutes: 60, periodInMinutes: 1440 }); // Check daily
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "checkBetterZeusUpdates") {
-    checkForUpdates();
-  }
-});
