@@ -4,6 +4,16 @@
   "author": "Axel Thauvin",
   "version": "1.0",
   "description": "Améliore l'interface de Zeus avec un calendrier juste plus beau.",
+  "browser_action": {},
+  "background": {
+    "scripts": ["src/background/index.js"]
+  },
+  "permissions": [
+    "notifications",
+    "storage",
+    "alarms",
+    "tabs"
+  ],
   "content_security_policy": "script-src 'self' object-src 'self'",
   "content_scripts": [
     {
