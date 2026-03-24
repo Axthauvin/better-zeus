@@ -236,7 +236,7 @@ const CalendarContainer = () => {
           availableRooms={availableRooms}
           selectedRooms={selectedRooms}
           onRoomsChange={setSelectedRooms}
-          onSelectionModeChange={setSelectionMode}
+          onSelectionModeChange={handleSelectionModeChange}
         />
       </aside>
 

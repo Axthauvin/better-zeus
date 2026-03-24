@@ -594,3 +594,20 @@
 [data-theme="dark"] .logout:hover {
   color: #a5b4fc;
 }
+
+/* Dark mode scrollbar */
+[data-theme="dark"] .group-content,
+[data-theme="dark"] .group-list {
+  scrollbar-color: #374151 #0f172a;
+}
+
+[data-theme="dark"] .group-content::-webkit-scrollbar-thumb,
+[data-theme="dark"] .group-list::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-color: #0f172a;
+}
+
+[data-theme="dark"] .group-content::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .group-list::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
