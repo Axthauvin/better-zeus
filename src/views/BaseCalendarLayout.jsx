@@ -9,6 +9,7 @@ import {
   ChevronDownIcon,
 } from "../components/CalendarIcons";
 import EventModal from "../components/EventModal";
+import PresenceMenu from "../components/PresenceMenu";
 
 /**
  * BaseCalendarLayout - Shared layout component for calendar views
@@ -26,10 +27,10 @@ const BaseCalendarLayout = ({
   headerSubtitle,
   monthDay,
   eventSearchQuery = "",
-  onEventSearchQueryChange = () => {},
+  onEventSearchQueryChange = () => { },
   theme = "light",
-  onToggleTheme = () => {},
-  onToggleSidebar = () => {},
+  onToggleTheme = () => { },
+  onToggleSidebar = () => { },
   selectedEvent,
   onCloseModal,
   children,
@@ -65,6 +66,7 @@ const BaseCalendarLayout = ({
             >
               <Menu size={18} />
             </button>
+            <PresenceMenu />
             <a
               className="btn-icon btn-github"
               href="https://github.com/Axthauvin/better-zeus"
