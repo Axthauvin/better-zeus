@@ -5,11 +5,13 @@ import { Search, Trash, Plus, Check, LogOut } from "lucide-react";
 
 const GroupSelector = ({
   selectedGroups,
+  enabledGroups = [],
   onGroupsChange,
+  onToggleGroupEnabled = () => { },
   availableRooms = [],
   selectedRooms = [],
-  onRoomsChange = () => {},
-  onSelectionModeChange = () => {},
+  onRoomsChange = () => { },
+  onSelectionModeChange = () => { },
 }) => {
   const [allGroups, setAllGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -266,19 +268,40 @@ const GroupSelector = ({
               </button>
             </div>
             <div className="selected-groups">
-              {selectedGroupsData.map((group) => (
-                <div key={group.id} className="selected-group-item">
-                  <Check color="#7f56d9" size={16} />
-                  <span className="group-name">{group.name}</span>
-                  <button
-                    className="remove-btn"
-                    onClick={() => handleGroupToggle(group.id)}
-                    title="Retirer"
+              {selectedGroupsData.map((group) => {
+                const isEnabled = enabledGroups.includes(group.id);
+                return (
+                  <div
+                    key={group.id}
+                    className={`selected-group-item ${isEnabled ? "" : "disabled"}`}
                   >
-                    <Trash size={16} color="#667085" />
-                  </button>
-                </div>
-              ))}
+                    <div
+                      className="group-toggle-checkbox"
+                      onClick={() => onToggleGroupEnabled(group.id)}
+                      title={isEnabled ? "Desactiver" : "Activer"}
+                    >
+                      {isEnabled ? (
+                        <Check color="#7f56d9" size={16} strokeWidth={3} />
+                      ) : (
+                        <div className="empty-check" />
+                      )}
+                    </div>
+                    <span
+                      className="group-name"
+                      onClick={() => onToggleGroupEnabled(group.id)}
+                    >
+                      {group.name}
+                    </span>
+                    <button
+                      className="remove-btn"
+                      onClick={() => handleGroupToggle(group.id)}
+                      title="Retirer"
+                    >
+                      <Trash size={16} color="#667085" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -324,8 +347,8 @@ const GroupSelector = ({
           <div className="group-list">
             {selectionMode === "groups" ? (
               unselectedFilteredGroups.length === 0 &&
-              searchQuery === "" &&
-              selectedGroups.length === allGroups.length ? (
+                searchQuery === "" &&
+                selectedGroups.length === allGroups.length ? (
                 <div className="no-groups">
                   <p>Tous les groupes sont selectionnes</p>
                 </div>

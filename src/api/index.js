@@ -131,12 +131,12 @@ export function transformApiDataToEvents(apiData) {
     teacher:
       item.teachers && item.teachers.length > 0
         ? item.teachers
-            .map((t) =>
-              t.firstname && t.name
-                ? `${t.firstname} ${t.name}`
-                : t.name || t.firstname || "",
-            )
-            .join(", ")
+          .map((t) =>
+            t.firstname && t.name
+              ? `${t.firstname} ${t.name}`
+              : t.name || t.firstname || "",
+          )
+          .join(", ")
         : "",
     type: item.typeName || "",
     groups: item.groups ? item.groups.map((g) => g.name) : [],
@@ -249,6 +249,15 @@ export function getSavedView() {
 
 export function saveView(view) {
   localStorage.setItem("better-zeus-calendar-view", view);
+}
+
+export function getEnabledGroups() {
+  const enabledGroups = localStorage.getItem("better-zeus-enabled-groups");
+  return enabledGroups ? JSON.parse(enabledGroups) : null;
+}
+
+export function saveEnabledGroups(groups) {
+  localStorage.setItem("better-zeus-enabled-groups", JSON.stringify(groups));
 }
 
 export function logout() {

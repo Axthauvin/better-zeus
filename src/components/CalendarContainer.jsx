@@ -5,6 +5,8 @@ import {
   transformApiDataToEvents,
   getSavedGroups,
   saveSelectedGroups,
+  getEnabledGroups,
+  saveEnabledGroups,
   getSavedView,
   saveView,
 } from "../api";
@@ -29,6 +31,9 @@ const CalendarContainer = () => {
   const [error, setError] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedGroups, setSelectedGroups] = useState(getSavedGroups() || []);
+  const [enabledGroups, setEnabledGroups] = useState(
+    getEnabledGroups() || getSavedGroups() || [],
+  );
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectionMode, setSelectionMode] = useState("groups");
   const [eventSearchQuery, setEventSearchQuery] = useState("");
@@ -96,8 +101,8 @@ const CalendarContainer = () => {
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 7);
 
-    loadEvents(startOfWeek, endOfWeek, selectedGroups);
-  }, [selectedGroups]);
+    loadEvents(startOfWeek, endOfWeek, enabledGroups);
+  }, [enabledGroups]);
 
   const handleViewChange = (newView) => {
     setView(newView);
@@ -123,10 +128,35 @@ const CalendarContainer = () => {
   };
 
   const handleGroupsChange = (newSelectedGroups) => {
+    // Determine if any new groups were added to enable them by default
+    const addedGroups = newSelectedGroups.filter(
+      (id) => !selectedGroups.includes(id),
+    );
+
+    let newEnabledGroups = enabledGroups.filter((id) =>
+      newSelectedGroups.includes(id),
+    );
+
+    if (addedGroups.length > 0) {
+      newEnabledGroups = [...newEnabledGroups, ...addedGroups];
+    }
+
     setSelectedGroups(newSelectedGroups);
-    // Sauvegarder les groupes sélectionnés dans le localStorage
+    setEnabledGroups(newEnabledGroups);
+
+    // Save to localStorage
     saveSelectedGroups(newSelectedGroups);
-    // Le useEffect se chargera de recharger les événements
+    saveEnabledGroups(newEnabledGroups);
+  };
+
+  const handleToggleGroupEnabled = (groupId) => {
+    const isEnabled = enabledGroups.includes(groupId);
+    const newEnabledGroups = isEnabled
+      ? enabledGroups.filter((id) => id !== groupId)
+      : [...enabledGroups, groupId];
+
+    setEnabledGroups(newEnabledGroups);
+    saveEnabledGroups(newEnabledGroups);
   };
 
   const handleToggleTheme = () => {
@@ -179,17 +209,6 @@ const CalendarContainer = () => {
     );
   });
 
-  if (loading && events.length === 0) {
-    return (
-      <div
-        className="week-calendar"
-        style={{ padding: "40px", textAlign: "center" }}
-      >
-        <p>Chargement du calendrier...</p>
-      </div>
-    );
-  }
-
   return (
     <div
       className={`calendar-container ${isSidebarOpen ? "sidebar-open" : ""}`}
@@ -205,6 +224,8 @@ const CalendarContainer = () => {
       <aside className={`sidebar-shell ${isSidebarOpen ? "open" : ""}`}>
         <GroupSelector
           selectedGroups={selectedGroups}
+          enabledGroups={enabledGroups}
+          onToggleGroupEnabled={handleToggleGroupEnabled}
           onGroupsChange={handleGroupsChange}
           availableRooms={availableRooms}
           selectedRooms={selectedRooms}
