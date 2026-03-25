@@ -1,4 +1,4 @@
-const GITHUB_API_URL = "https://api.github.com/repos/Axthauvin/better-zeus/releases/latest";
+const GITHUB_API_URL = "https://raw.githubusercontent.com/axthauvin/better-zeus/main/version.json";
 const ZEUS_URL = "https://zeus.ionis-it.com/home";
 
 // ---
@@ -18,7 +18,7 @@ if (actionApi) {
 // 2. Check for updates from GitHub Releases
 // ---
 
-async function checkForUpdates() {
+async function checkForUpdates(tabId) {
   try {
     const result = await new Promise(resolve => chrome.storage.local.get(['lastUpdateCheck', 'latestVersionCache'], resolve));
     let latestVersion = result.latestVersionCache;
@@ -30,7 +30,7 @@ async function checkForUpdates() {
       if (!response.ok) return;
 
       const data = await response.json();
-      const latestTag = data.tag_name; // e.g., "v1.1.0" or "1.1.0"
+      const latestTag = data.version; // e.g., "v1.1.0" or "1.1.0"
       
       latestVersion = latestTag.startsWith('v') ? latestTag.substring(1) : latestTag;
       chrome.storage.local.set({ 
@@ -42,7 +42,9 @@ async function checkForUpdates() {
     const currentVersion = chrome.runtime.getManifest().version;
     
     if (isNewerVersion(currentVersion, latestVersion)) {
-      showUpdateNotification(latestVersion);
+      if (tabId) {
+        chrome.tabs.sendMessage(tabId, { action: "update_available", version: latestVersion }).catch(() => {});
+      }
     }
   } catch (error) {
     console.error("Failed to check for Better Zeus updates:", error.message || error);
@@ -63,29 +65,9 @@ function isNewerVersion(current, latest) {
   return false;
 }
 
-function showUpdateNotification(version) {
-  const notificationId = `better-zeus-update-${version}-${Date.now()}`;
-  
-  chrome.notifications.create(notificationId, {
-    type: 'basic',
-    iconUrl: chrome.runtime.getURL('src/icons/128x128.png'), 
-    title: 'Mise à jour disponible !',
-    message: `La version ${version} de Better Zeus est disponible. Cliquez pour voir les nouveautés.`,
-    isClickable: true
-  });
-}
-
-// Handle notification click to open the release page
-chrome.notifications.onClicked.addListener((notificationId) => {
-  if (notificationId.startsWith('better-zeus-update-')) {
-    chrome.tabs.create({ url: "https://github.com/Axthauvin/better-zeus/releases/latest" });
-    chrome.notifications.clear(notificationId);
-  }
-});
-
 // Detect when the user opens the Zeus website
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.url && tab.url.includes("zeus.ionis-it.com")) {
-    checkForUpdates();
+    checkForUpdates(tabId);
   }
 });

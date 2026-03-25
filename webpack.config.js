@@ -12,6 +12,7 @@ export default {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js",
     clean: true,
+    globalObject: "window"
   },
   module: {
     rules: [

@@ -12,9 +12,7 @@
     "https://api.github.com/"
   ],
   "permissions": [
-    "notifications",
     "storage",
-    "alarms",
     "tabs"
   ],
   "content_security_policy": {
