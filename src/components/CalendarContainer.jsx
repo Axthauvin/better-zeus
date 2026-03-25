@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GroupSelector from "./GroupSelector";
+import UpdateNotifier from "./UpdateNotifier";
 import {
   fetchTimeTable,
   transformApiDataToEvents,
@@ -65,7 +66,7 @@ const CalendarContainer = () => {
       setCurrentDate(newDate);
       const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
       const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
-      loadEvents(start, end, selectedGroups);
+      loadEvents(start, end, enabledGroups);
     }
   };
 
@@ -119,12 +120,12 @@ const CalendarContainer = () => {
     }
 
     // Reload events with the new date range
-    loadEvents(startDate, endDate, selectedGroups);
+    loadEvents(startDate, endDate, enabledGroups);
   };
 
   const handleDateChange = (newDate, startDate, endDate) => {
     setCurrentDate(newDate);
-    loadEvents(startDate, endDate, selectedGroups);
+    loadEvents(startDate, endDate, enabledGroups);
   };
 
   const handleGroupsChange = (newSelectedGroups) => {
@@ -287,6 +288,7 @@ const CalendarContainer = () => {
           </div>
         )}
       </div>
+      <UpdateNotifier theme={theme} />
     </div>
   );
 };

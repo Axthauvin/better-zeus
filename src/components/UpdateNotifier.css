@@ -1,0 +1,121 @@
+/* src/components/UpdateNotifier.css */
+.update-notifier {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
+  background-color: #ffffff;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 330px;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #101828;
+}
+
+[data-theme="dark"] .update-notifier,
+.update-notifier.dark {
+  background-color: #111827;
+  border-color: #374151;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  color: #e5e7eb;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.update-notifier-content h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #101828;
+  letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .update-notifier-content h3,
+.update-notifier.dark .update-notifier-content h3 {
+  color: #e5e7eb;
+}
+
+.update-notifier-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #475467;
+  line-height: 1.4;
+}
+
+[data-theme="dark"] .update-notifier-content p,
+.update-notifier.dark .update-notifier-content p {
+  color: #9ca3af;
+}
+
+.update-notifier-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.update-notifier-actions button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.update-btn-primary {
+  background-color: #7f56d9;
+  color: white;
+  flex: 1;
+}
+
+.update-btn-primary:hover {
+  background-color: #6941c6;
+}
+
+[data-theme="dark"] .update-btn-primary,
+.update-notifier.dark .update-btn-primary {
+  background-color: #6366f1;
+}
+
+[data-theme="dark"] .update-btn-primary:hover,
+.update-notifier.dark .update-btn-primary:hover {
+  background-color: #4f46e5;
+}
+
+.update-btn-secondary {
+  background-color: #ffffff;
+  color: #344054;
+  border: 1px solid #d0d5dd !important;
+}
+
+.update-btn-secondary:hover {
+  background-color: #f9fafb;
+}
+
+[data-theme="dark"] .update-btn-secondary,
+.update-notifier.dark .update-btn-secondary {
+  background-color: #111827;
+  color: #d1d5db;
+  border-color: #374151 !important;
+}
+
+[data-theme="dark"] .update-btn-secondary:hover,
+.update-notifier.dark .update-btn-secondary:hover {
+  background-color: #1f2937;
+}

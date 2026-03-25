@@ -70,6 +70,37 @@ export async function fetchTimeTable(
   }
 }
 
+/**
+ * Fetches events in chunks of maximum 25 days to bypass API limitations.
+ * @param {string[]} groupsId Array of group IDs
+ * @param {Date} startDate Starting date
+ * @param {Date} endDate Ending date
+ * @returns {Promise<any[]>} Flattened list of events
+ */
+export async function fetchEventsInChunks(groupsId, startDate, endDate) {
+  const MAX_DAYS = 25;
+  const allEvents = [];
+  let currentStart = new Date(startDate);
+
+  while (currentStart < endDate) {
+    let currentEnd = new Date(currentStart);
+    currentEnd.setDate(currentEnd.getDate() + MAX_DAYS);
+
+    if (currentEnd > endDate) {
+      currentEnd = new Date(endDate);
+    }
+
+    const chunkEvents = await fetchTimeTable(groupsId, currentStart, currentEnd);
+    allEvents.push(...chunkEvents);
+
+    // Move to next chunk
+    currentStart = new Date(currentEnd);
+    currentStart.setDate(currentStart.getDate() + 1);
+  }
+
+  return allEvents;
+}
+
 export async function fetchReservationDetails(reservationId) {
   if (!reservationId) {
     throw new Error("No reservationId provided");

@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { fetchEventsInChunks, transformApiDataToEvents } from "../api";
+import { differenceInMinutes } from "date-fns";
 
 const AttendanceContext = createContext(null);
 
@@ -66,6 +68,45 @@ export const AttendanceProvider = ({ children }) => {
       String(attendanceThreshold),
     );
   }, [attendanceThreshold]);
+
+  const [presenceGroupId, setPresenceGroupId] = useState(() => {
+    return localStorage.getItem("better-zeus-presence-group-id") || "";
+  });
+
+  const [semesterStartDate, setSemesterStartDate] = useState(() => {
+    return localStorage.getItem("better-zeus-semester-start-date") || "";
+  });
+
+  const [lastPresenceRefresh, setLastPresenceRefresh] = useState(() => {
+    return localStorage.getItem("better-zeus-presence-last-refresh") || "";
+  });
+
+  const [presenceStats, setPresenceStats] = useState(() => {
+    try {
+      const saved = localStorage.getItem("better-zeus-presence-stats");
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [isRefreshingPresence, setIsRefreshingPresence] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("better-zeus-presence-group-id", presenceGroupId);
+  }, [presenceGroupId]);
+
+  useEffect(() => {
+    localStorage.setItem("better-zeus-semester-start-date", semesterStartDate);
+  }, [semesterStartDate]);
+
+  useEffect(() => {
+    localStorage.setItem("better-zeus-presence-last-refresh", lastPresenceRefresh);
+  }, [lastPresenceRefresh]);
+
+  useEffect(() => {
+    localStorage.setItem("better-zeus-presence-stats", JSON.stringify(presenceStats));
+  }, [presenceStats]);
 
   const normalizeCourseTitle = (title) =>
     String(title || "")
@@ -176,6 +217,52 @@ export const AttendanceProvider = ({ children }) => {
     return { total: visibleEvents.length, ignored, missed, counted };
   };
 
+  const refreshPresenceStats = async () => {
+    if (!presenceGroupId || !semesterStartDate) return;
+
+    setIsRefreshingPresence(true);
+    try {
+      const start = new Date(semesterStartDate);
+      const end = new Date(); // To today
+
+      const rawEvents = await fetchEventsInChunks([presenceGroupId], start, end);
+      const events = transformApiDataToEvents(rawEvents);
+      
+      const eligibleEvents = events.filter((ev) => !isIgnoredEvent(ev));
+      
+      let totalMinutes = 0;
+      let absentMinutes = 0;
+
+      eligibleEvents.forEach((event) => {
+        const duration = differenceInMinutes(event.end, event.start);
+        totalMinutes += duration;
+        
+        if (missedEvents.includes(event.id)) {
+          absentMinutes += duration;
+        }
+      });
+
+      const totalHours = totalMinutes / 60;
+      const absentHours = absentMinutes / 60;
+      const attendedHours = totalHours - absentHours;
+      const percentage = totalHours > 0 ? (attendedHours / totalHours) * 100 : 100;
+
+      const newStats = {
+        totalHours: Math.round(totalHours * 100) / 100,
+        absentHours: Math.round(absentHours * 100) / 100,
+        attendedHours: Math.round(attendedHours * 100) / 100,
+        percentage: Math.round(percentage * 10) / 10,
+      };
+
+      setPresenceStats(newStats);
+      setLastPresenceRefresh(new Date().toISOString());
+    } catch (error) {
+      console.error("Failed to refresh presence stats:", error);
+    } finally {
+      setIsRefreshingPresence(false);
+    }
+  };
+
   return (
     <AttendanceContext.Provider
       value={{
@@ -187,6 +274,14 @@ export const AttendanceProvider = ({ children }) => {
         setIgnoredCourseTitles,
         attendanceThreshold,
         setAttendanceThreshold,
+        presenceGroupId,
+        setPresenceGroupId,
+        semesterStartDate,
+        setSemesterStartDate,
+        lastPresenceRefresh,
+        presenceStats,
+        isRefreshingPresence,
+        refreshPresenceStats,
         toggleMissedEvent,
         toggleIgnoredEvent,
         isEventMissed,
