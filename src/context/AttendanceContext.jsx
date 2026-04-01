@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { fetchEventsInChunks, transformApiDataToEvents } from "../api";
 import { differenceInMinutes } from "date-fns";
 
@@ -26,7 +32,9 @@ export const AttendanceProvider = ({ children }) => {
   const [nonCountableCourseList, setNonCountableCourseList] = useState(() => {
     try {
       const saved = localStorage.getItem("better-zeus-non-countable-courses");
-      return saved ? JSON.parse(saved) : [{ title: "férié" }, { title: "vacances" }, { title: "partiel" }];
+      return saved
+        ? JSON.parse(saved)
+        : [{ title: "férié" }, { title: "vacances" }, { title: "partiel" }];
     } catch (e) {
       return [{ title: "férié" }, { title: "vacances" }, { title: "partiel" }];
     }
@@ -101,11 +109,17 @@ export const AttendanceProvider = ({ children }) => {
   }, [semesterStartDate]);
 
   useEffect(() => {
-    localStorage.setItem("better-zeus-presence-last-refresh", lastPresenceRefresh);
+    localStorage.setItem(
+      "better-zeus-presence-last-refresh",
+      lastPresenceRefresh,
+    );
   }, [lastPresenceRefresh]);
 
   useEffect(() => {
-    localStorage.setItem("better-zeus-presence-stats", JSON.stringify(presenceStats));
+    localStorage.setItem(
+      "better-zeus-presence-stats",
+      JSON.stringify(presenceStats),
+    );
   }, [presenceStats]);
 
   const normalizeCourseTitle = (title) =>
@@ -121,24 +135,29 @@ export const AttendanceProvider = ({ children }) => {
     return { title, type };
   };
 
-  const isCourseInList = (list, courseObj) => {
+  const isCourseInList = (list, courseObj, matchTitleOnly = false) => {
     if (!courseObj) return false;
     return list.some((item) => {
       // If the saved item has no type (fallback), it matches any type.
       // We also do a substring match for generic items like 'férié' to catch 'jour férié'.
-      if (!item.type) {
-        return courseObj.title === item.title || courseObj.title.includes(item.title);
+      if (!item.type || matchTitleOnly) {
+        return (
+          courseObj.title === item.title || courseObj.title.includes(item.title)
+        );
       }
       return item.title === courseObj.title && item.type === courseObj.type;
     });
   };
 
-  const removeCourseFromList = (list, courseObj) => {
+  const removeCourseFromList = (list, courseObj, matchTitleOnly = false) => {
     if (!courseObj) return list;
     return list.filter((item) => {
-      const isExactMatch = item.title === courseObj.title && item.type === courseObj.type;
-      const isTitleMatch = item.title === courseObj.title;
-      return !isExactMatch && !isTitleMatch;
+      if (matchTitleOnly || !item.type) {
+        return item.title !== courseObj.title;
+      }
+      const isExactMatch =
+        item.title === courseObj.title && item.type === courseObj.type;
+      return !isExactMatch;
     });
   };
 
@@ -159,8 +178,12 @@ export const AttendanceProvider = ({ children }) => {
 
     // A course cannot be both nonCountable/ignored and missed
     if (courseObj) {
-      setIgnoredCourseList((prev) => removeCourseFromList(prev, courseObj));
-      setNonCountableCourseList((prev) => removeCourseFromList(prev, courseObj));
+      setIgnoredCourseList((prev) =>
+        removeCourseFromList(prev, courseObj, false),
+      );
+      setNonCountableCourseList((prev) =>
+        removeCourseFromList(prev, courseObj, false),
+      );
     }
   };
 
@@ -172,17 +195,23 @@ export const AttendanceProvider = ({ children }) => {
     const courseObj = getCourseObject(eventOrId);
 
     if (courseObj) {
-      const isBecomingIgnored = !isCourseInList(ignoredCourseList, courseObj);
+      const titleOnlyObj = { title: courseObj.title };
+      const isBecomingIgnored = !isCourseInList(
+        ignoredCourseList,
+        titleOnlyObj,
+        true,
+      );
       setIgnoredCourseList((prev) => {
-        const filtered = removeCourseFromList(prev, courseObj);
+        const filtered = removeCourseFromList(prev, titleOnlyObj, true);
         if (!isBecomingIgnored) {
           return filtered; // It was in the list, so we uncheck it
         }
-        return [...filtered, courseObj]; // It was NOT in the list, so check it
+        return [...filtered, titleOnlyObj]; // Save without type so it matches all variants
       });
       if (isBecomingIgnored) {
         setNonCountableCourseList((prev) => {
-          if (!isCourseInList(prev, courseObj)) return [...prev, courseObj];
+          if (!isCourseInList(prev, titleOnlyObj, true))
+            return [...prev, titleOnlyObj];
           return prev;
         });
       }
@@ -200,18 +229,24 @@ export const AttendanceProvider = ({ children }) => {
     const courseObj = getCourseObject(eventOrId);
 
     if (courseObj) {
-      const isBecomingCountable = isCourseInList(nonCountableCourseList, courseObj);
+      const isBecomingCountable = isCourseInList(
+        nonCountableCourseList,
+        courseObj,
+        false,
+      );
 
       setNonCountableCourseList((prev) => {
-        const filtered = removeCourseFromList(prev, courseObj);
+        const filtered = removeCourseFromList(prev, courseObj, false);
         if (isBecomingCountable) {
           return filtered; // Turn off
         }
-        return [...filtered, courseObj]; // Turn on
+        return [...filtered, courseObj]; // Turn on, saving specific type
       });
 
       if (isBecomingCountable) {
-        setIgnoredCourseList((prev) => removeCourseFromList(prev, courseObj));
+        setIgnoredCourseList((prev) =>
+          removeCourseFromList(prev, courseObj, false),
+        );
       }
     }
 
@@ -232,7 +267,9 @@ export const AttendanceProvider = ({ children }) => {
   const calculateAttendanceRate = (visibleEvents) => {
     if (!visibleEvents || visibleEvents.length === 0) return 100;
 
-    const eligibleEvents = visibleEvents.filter((ev) => !isNonCountableEvent(ev));
+    const eligibleEvents = visibleEvents.filter(
+      (ev) => !isNonCountableEvent(ev),
+    );
 
     if (eligibleEvents.length === 0) return 100;
 
@@ -249,14 +286,21 @@ export const AttendanceProvider = ({ children }) => {
     }
 
     // We keep the object key 'ignored' to avoid breaking UI, but it now represents non-countable events
-    const ignoredCount = visibleEvents.filter((ev) => isNonCountableEvent(ev)).length;
+    const ignoredCount = visibleEvents.filter((ev) =>
+      isNonCountableEvent(ev),
+    ).length;
 
     const counted = visibleEvents.length - ignoredCount;
     const missed = visibleEvents.filter(
       (ev) => missedEvents.includes(ev.id) && !isNonCountableEvent(ev),
     ).length;
 
-    return { total: visibleEvents.length, ignored: ignoredCount, missed, counted };
+    return {
+      total: visibleEvents.length,
+      ignored: ignoredCount,
+      missed,
+      counted,
+    };
   };
 
   const refreshPresenceStats = async () => {
@@ -267,7 +311,11 @@ export const AttendanceProvider = ({ children }) => {
       const start = new Date(semesterStartDate);
       const end = new Date(); // To today
 
-      const rawEvents = await fetchEventsInChunks([presenceGroupId], start, end);
+      const rawEvents = await fetchEventsInChunks(
+        [presenceGroupId],
+        start,
+        end,
+      );
       const events = transformApiDataToEvents(rawEvents);
 
       const eligibleEvents = events.filter((ev) => !isNonCountableEvent(ev));
@@ -287,7 +335,8 @@ export const AttendanceProvider = ({ children }) => {
       const totalHours = totalMinutes / 60;
       const absentHours = absentMinutes / 60;
       const attendedHours = totalHours - absentHours;
-      const percentage = totalHours > 0 ? (attendedHours / totalHours) * 100 : 100;
+      const percentage =
+        totalHours > 0 ? (attendedHours / totalHours) * 100 : 100;
 
       const newStats = {
         totalHours: Math.round(totalHours * 100) / 100,
