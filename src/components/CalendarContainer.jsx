@@ -54,21 +54,34 @@ const CalendarContainer = () => {
     localStorage.setItem("better-zeus-theme", theme);
   }, [theme]);
 
-  const handleArrowKeyDown = (e) => {
-    console.log("Key pressed:", e.key);
-    let newDate;
-    if (e.key === "ArrowLeft") {
-      newDate = subWeeks(currentDate, 1);
-    } else if (e.key === "ArrowRight") {
-      newDate = addWeeks(currentDate, 1);
-    }
-    if (newDate) {
-      setCurrentDate(newDate);
-      const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
-      const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
-      loadEvents(start, end, enabledGroups);
-    }
-  };
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      // Ignorer si l'utilisateur tape dans un champ de recherche
+      if (
+        document.activeElement &&
+        ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+      ) {
+        return;
+      }
+
+      let newDate;
+      if (e.key === "ArrowLeft") {
+        newDate = subWeeks(currentDate, 1);
+      } else if (e.key === "ArrowRight") {
+        newDate = addWeeks(currentDate, 1);
+      }
+
+      if (newDate) {
+        setCurrentDate(newDate);
+        const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+        const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+        loadEvents(start, end, enabledGroups);
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [currentDate, enabledGroups]);
 
   // Fetch events from API
   const loadEvents = async (startDate, endDate, groups) => {
@@ -219,8 +232,6 @@ const CalendarContainer = () => {
   return (
     <div
       className={`calendar-container ${isSidebarOpen ? "sidebar-open" : ""}`}
-      onKeyDown={handleArrowKeyDown}
-      tabIndex={0}
       data-theme={theme}
     >
       <div
