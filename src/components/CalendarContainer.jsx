@@ -10,19 +10,25 @@ import {
   saveEnabledGroups,
   getSavedView,
   saveView,
+  fetchEventsInChunks,
 } from "../api";
 import {
   startOfWeek,
   endOfWeek,
   startOfDay,
   endOfDay,
+  startOfMonth,
+  endOfMonth,
   addWeeks,
   subWeeks,
+  addMonths,
+  subMonths,
 } from "date-fns";
 import { fr } from "date-fns/locale";
 import BaseCalendarLayout from "../views/BaseCalendarLayout";
 import WeekView from "../views/WeekView";
 import DayView from "../views/DayView";
+import MonthView from "../views/MonthView"; // <-- Added MonthView
 import "./CalendarContainer.css";
 
 const CalendarContainer = () => {
@@ -66,15 +72,24 @@ const CalendarContainer = () => {
 
       let newDate;
       if (e.key === "ArrowLeft") {
-        newDate = subWeeks(currentDate, 1);
+        newDate = view === "month" ? subMonths(currentDate, 1) : subWeeks(currentDate, 1);
       } else if (e.key === "ArrowRight") {
-        newDate = addWeeks(currentDate, 1);
+        newDate = view === "month" ? addMonths(currentDate, 1) : addWeeks(currentDate, 1);
       }
 
       if (newDate) {
         setCurrentDate(newDate);
-        const start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
-        const end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+        let start, end;
+        if (view === "month") {
+          start = startOfWeek(startOfMonth(newDate), { locale: fr, weekStartsOn: 1 });
+          end = endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 });
+        } else if (view === "week") {
+          start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+          end = endOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
+        } else {
+          start = startOfDay(newDate);
+          end = endOfDay(newDate);
+        }
         loadEvents(start, end, enabledGroups);
       }
     };
@@ -97,7 +112,7 @@ const CalendarContainer = () => {
         return;
       }
 
-      const apiData = await fetchTimeTable(groups, startDate, endDate);
+      const apiData = await fetchEventsInChunks(groups, startDate, endDate);
       const transformedEvents = transformApiDataToEvents(apiData);
       setEvents(transformedEvents);
     } catch (err) {
@@ -110,12 +125,18 @@ const CalendarContainer = () => {
 
   // Load events when selectedGroups or currentDate changes
   useEffect(() => {
-    const startOfWeek = new Date(currentDate);
-    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 7);
-
-    loadEvents(startOfWeek, endOfWeek, enabledGroups);
+    let startDate, endDate;
+    if (view === "month") {
+      startDate = startOfWeek(startOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
+      endDate = endOfWeek(endOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
+    } else if (view === "week") {
+      startDate = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
+      endDate = endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
+    } else {
+      startDate = startOfDay(currentDate);
+      endDate = endOfDay(currentDate);
+    }
+    loadEvents(startDate, endDate, enabledGroups);
   }, [enabledGroups]);
 
   const handleViewChange = (newView) => {
@@ -124,7 +145,10 @@ const CalendarContainer = () => {
 
     // Recalculate date range based on the new view
     let startDate, endDate;
-    if (newView === "week") {
+    if (newView === "month") {
+      startDate = startOfWeek(startOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
+      endDate = endOfWeek(endOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
+    } else if (newView === "week") {
       startDate = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
       endDate = endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
     } else {
@@ -253,7 +277,21 @@ const CalendarContainer = () => {
       </aside>
 
       <div className="calendar-main">
-        {view === "week" ? (
+        {view === "month" ? (
+          <MonthView
+            events={filteredEvents}
+            onViewChange={handleViewChange}
+            onDateChange={handleDateChange}
+            currentDate={currentDate}
+            setCurrentDate={setCurrentDate}
+            loading={loading}
+            onToggleTheme={handleToggleTheme}
+            theme={theme}
+            eventSearchQuery={eventSearchQuery}
+            onEventSearchQueryChange={setEventSearchQuery}
+            onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+          />
+        ) : view === "week" ? (
           <WeekView
             events={filteredEvents}
             onViewChange={handleViewChange}

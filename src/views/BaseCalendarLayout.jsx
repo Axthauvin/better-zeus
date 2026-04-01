@@ -117,10 +117,16 @@ const BaseCalendarLayout = ({
 
           <div className="view-dropdown">
             <button className="btn-view">
-              {view === "week" ? "Semaine" : "Jour"}
+              {view === "month" ? "Mois" : view === "week" ? "Semaine" : "Jour"}
               <ChevronDownIcon />
             </button>
             <div className="view-menu">
+              <button
+                onClick={() => onViewChange("month")}
+                className={view === "month" ? "active" : ""}
+              >
+                Mois
+              </button>
               <button
                 onClick={() => onViewChange("week")}
                 className={view === "week" ? "active" : ""}
