@@ -1,7 +1,7 @@
 // Calendar configuration constants
 export const CALENDAR_CONFIG = {
   HOUR_START: 0,
-  HOUR_END: 24,
+  HOUR_END: 23,
   HOUR_HEIGHT: 40, // pixels per hour
 };
 

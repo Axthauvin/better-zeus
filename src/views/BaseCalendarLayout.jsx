@@ -10,6 +10,7 @@ import {
 } from "../components/CalendarIcons";
 import EventModal from "../components/EventModal";
 import PresenceMenu from "../components/PresenceMenu";
+import DataMenu from "../components/DataMenu";
 
 /**
  * BaseCalendarLayout - Shared layout component for calendar views
@@ -67,6 +68,7 @@ const BaseCalendarLayout = ({
               <Menu size={18} />
             </button>
             <PresenceMenu />
+            <DataMenu />
             <a
               className="btn-icon btn-github"
               href="https://github.com/Axthauvin/better-zeus"
@@ -117,10 +119,16 @@ const BaseCalendarLayout = ({
 
           <div className="view-dropdown">
             <button className="btn-view">
-              {view === "week" ? "Semaine" : "Jour"}
+              {view === "month" ? "Mois" : view === "week" ? "Semaine" : "Jour"}
               <ChevronDownIcon />
             </button>
             <div className="view-menu">
+              <button
+                onClick={() => onViewChange("month")}
+                className={view === "month" ? "active" : ""}
+              >
+                Mois
+              </button>
               <button
                 onClick={() => onViewChange("week")}
                 className={view === "week" ? "active" : ""}

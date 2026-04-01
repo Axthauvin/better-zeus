@@ -420,3 +420,24 @@
     padding: 16px;
   }
 }
+
+.attendance-action.active.non-countable {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.attendance-action.active.non-countable .attendance-action-icon {
+  color: #b45309;
+}
+
+.attendance-action.active.non-countable .attendance-state-pill {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .attendance-action.active.non-countable {
+  background: rgba(217, 119, 6, 0.3);
+  border-color: #b45309;
+  color: #fde68a;
+}

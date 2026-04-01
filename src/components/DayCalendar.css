@@ -222,3 +222,23 @@
     font-size: 11px;
   }
 }
+
+/* Dark mode overrides for DayCalendar */
+[data-theme="dark"] .day-grid .day-headers {
+  background: #020617;
+  border-bottom-color: #1f2937;
+}
+
+[data-theme="dark"] .day-calendar .time-header {
+  border-bottom-color: #1f2937;
+}
+
+[data-theme="dark"] .time-slot-day,
+[data-theme="dark"] .hour-row-day {
+  border-color: #1f2937;
+}
+
+[data-theme="dark"] .hour-grid-day,
+[data-theme="dark"] .day-calendar-grid-container {
+  background: #020617;
+}

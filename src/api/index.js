@@ -78,13 +78,21 @@ export async function fetchTimeTable(
  * @returns {Promise<any[]>} Flattened list of events
  */
 export async function fetchEventsInChunks(groupsId, startDate, endDate) {
-  const MAX_DAYS = 25;
   const allEvents = [];
   let currentStart = new Date(startDate);
+  // Reset time to start of day for strict chunking
+  currentStart.setHours(0, 0, 0, 0);
 
   while (currentStart < endDate) {
     let currentEnd = new Date(currentStart);
-    currentEnd.setDate(currentEnd.getDate() + MAX_DAYS);
+
+    // Find the next Sunday for the currentEnd
+    const dayOfWeek = currentEnd.getDay();
+    // 0 is Sunday, 1 is Monday... If not Sunday, add days to reach Sunday
+    const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+    
+    currentEnd.setDate(currentEnd.getDate() + daysUntilSunday);
+    currentEnd.setHours(23, 59, 59, 999);
 
     if (currentEnd > endDate) {
       currentEnd = new Date(endDate);
@@ -93,9 +101,10 @@ export async function fetchEventsInChunks(groupsId, startDate, endDate) {
     const chunkEvents = await fetchTimeTable(groupsId, currentStart, currentEnd);
     allEvents.push(...chunkEvents);
 
-    // Move to next chunk
+    // Move to next chunk (starts on the following Monday at midnight)
     currentStart = new Date(currentEnd);
     currentStart.setDate(currentStart.getDate() + 1);
+    currentStart.setHours(0, 0, 0, 0);
   }
 
   return allEvents;

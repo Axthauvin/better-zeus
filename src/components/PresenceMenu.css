@@ -456,3 +456,10 @@
 [data-theme='dark'] .refresh-time {
   color: #9ca3af;
 }
+
+@media (max-width: 1024px) {
+  .presence-dropdown {
+    right: auto;
+    left: 0;
+  }
+}

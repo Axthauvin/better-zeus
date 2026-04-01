@@ -395,3 +395,90 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* Dark mode styles */
+[data-theme="dark"] .day-picker-modal {
+  background: #111827;
+}
+
+[data-theme="dark"] .day-picker-presets {
+  border-right-color: #374151;
+}
+
+[data-theme="dark"] .preset-button {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .preset-button:hover {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .rdp-caption_label {
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .rdp-nav_button {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .rdp-nav_button:hover {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .rdp-head_cell {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .rdp-day {
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .rdp-day:hover:not(.rdp-day_selected):not(.rdp-day_disabled) {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+
+[data-theme="dark"] .rdp-dropdown_month,
+[data-theme="dark"] .rdp-dropdown_year {
+  background: #111827;
+  border-color: #374151;
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .rdp-dropdown_month:hover,
+[data-theme="dark"] .rdp-dropdown_year:hover {
+  border-color: #4b5563;
+  background: #1f2937;
+}
+
+[data-theme="dark"] .rdp-day_outside {
+  color: #4b5563;
+}
+
+[data-theme="dark"] .rdp-day_disabled {
+  color: #374151;
+}
+
+[data-theme="dark"] .rdp-day_hovered-week {
+  background: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+
+[data-theme="dark"] .rdp-day_range_middle {
+  background: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+
+@media (max-width: 720px) {
+  [data-theme="dark"] .day-picker-presets {
+    border-right: none;
+    border-bottom-color: #374151;
+  }
+  
+  [data-theme="dark"] .preset-button {
+    border-color: #374151;
+  }
+}
+
