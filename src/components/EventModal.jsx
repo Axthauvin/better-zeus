@@ -80,7 +80,10 @@ const EventModal = ({ event, onClose }) => {
               className="event-color-indicator"
               style={{ backgroundColor: event.color }}
             ></div>
-            <h2 className="event-modal-title">{event.title}</h2>
+            <h2 className="event-modal-title">
+              {event.title}
+              {details?.code && ` (${details.code})`}
+            </h2>
           </div>
           <button
             className="event-modal-close"
