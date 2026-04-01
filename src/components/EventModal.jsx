@@ -22,8 +22,10 @@ const EventModal = ({ event, onClose }) => {
   const {
     isEventMissed,
     isEventIgnored,
+    isNonCountableEvent,
     toggleMissedEvent,
     toggleIgnoredEvent,
+    toggleNonCountableEvent,
   } = useAttendance();
 
   const [details, setDetails] = useState(null);
@@ -51,6 +53,7 @@ const EventModal = ({ event, onClose }) => {
 
   const missed = isEventMissed(event.id);
   const ignored = isEventIgnored(event);
+  const nonCountable = isNonCountableEvent(event);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -205,12 +208,25 @@ const EventModal = ({ event, onClose }) => {
                 <CheckCircle2 size={18} className="attendance-action-icon" />
                 <span>
                   {ignored
-                    ? "Cours ignore (compensation)"
+                    ? "Cours ignoré (compensation)"
                     : "Ignorer ce cours (compensation)"}
                 </span>
               </div>
               <span className="attendance-state-pill">
                 {ignored ? "Actif" : "Off"}
+              </span>
+            </button>
+
+            <button
+              className={`attendance-action ${nonCountable ? "active non-countable" : ""}`}
+              onClick={() => toggleNonCountableEvent(event)}
+            >
+              <div className="attendance-action-main">
+                <CheckCircle2 size={18} className="attendance-action-icon" />
+                <span>Ne compte pas dans la présence</span>
+              </div>
+              <span className="attendance-state-pill">
+                {nonCountable ? "Actif" : "Off"}
               </span>
             </button>
           </div>
