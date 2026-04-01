@@ -702,7 +702,9 @@ body {
   }
 
   .calendar-toolbar {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
   }
 
@@ -730,6 +732,11 @@ body {
   .btn-view,
   .btn-select-event {
     height: 38px;
+  }
+
+  .view-menu {
+    right: auto;
+    left: 0;
   }
 }
 
@@ -777,8 +784,7 @@ body {
     width: 100%;
     justify-content: flex-start;
     gap: 6px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    flex-wrap: wrap;
     padding-bottom: 2px;
   }
 
