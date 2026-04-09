@@ -12,6 +12,7 @@ import {
    CheckCircle2,
    Video,
    ExternalLink,
+   MessageSquare,
  } from "lucide-react";
 import { useAttendance } from "../context/AttendanceContext";
 import "./EventModal.css";
@@ -72,6 +73,30 @@ const EventModal = ({ event, onClose }) => {
     } else {
       return `${minutes}min`;
     }
+  };
+
+  const renderTextWithLinks = (text) => {
+    if (!text) return null;
+    // Regex to find URLs starting with http or https
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="online-link"
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
   };
 
   return (
@@ -163,6 +188,18 @@ const EventModal = ({ event, onClose }) => {
             </div>
           )}
 
+          {details?.comment && (
+            <div className="event-info-item event-comment">
+              <MessageSquare size={18} className="event-info-icon" />
+              <div className="event-info-content">
+                <div className="event-info-label">Commentaire</div>
+                <div className="event-info-value italic-comment">
+                  {renderTextWithLinks(details.comment)}
+                </div>
+              </div>
+            </div>
+          )}
+
           {event.groups && event.groups.length > 0 && (
             <div className="event-info-item">
               <Users size={18} className="event-info-icon" />
@@ -178,7 +215,9 @@ const EventModal = ({ event, onClose }) => {
           {event.description && (
             <div className="event-description">
               <div className="event-info-label">Description</div>
-              <p className="event-description-text">{event.description}</p>
+              <p className="event-description-text">
+                {renderTextWithLinks(event.description)}
+              </p>
             </div>
           )}
 

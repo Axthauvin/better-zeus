@@ -166,6 +166,8 @@
   font-weight: 500;
   color: #101828;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .event-info-time {
@@ -173,6 +175,23 @@
   color: #475467;
   margin-top: 4px;
   line-height: 1.4;
+}
+
+.italic-comment {
+  font-style: italic;
+  color: #475467;
+}
+
+.event-comment {
+  background-color: #f8f9fc;
+  margin-left: -24px;
+  margin-right: -24px;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+[data-theme="dark"] .event-comment {
+  background-color: rgba(37, 99, 235, 0.05);
 }
 
 .event-description {
@@ -186,6 +205,8 @@
   color: #475467;
   line-height: 1.6;
   margin: 8px 0 0;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .event-modal-footer {
@@ -382,6 +403,8 @@
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .online-link:hover {
