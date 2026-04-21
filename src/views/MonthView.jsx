@@ -15,6 +15,7 @@ import { fr } from "date-fns/locale";
 import BaseCalendarLayout from "./BaseCalendarLayout";
 import { getEventsForDay, getEventStyle } from "../utils/calendarHelpers";
 import "../components/MonthCalendar.css";
+import { useAttendance } from "../context/AttendanceContext";
 
 const MonthView = ({
   events = [],
@@ -31,6 +32,8 @@ const MonthView = ({
 }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  const { isEventMissed, isEventIgnored } = useAttendance();
+
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
 
@@ -38,7 +41,7 @@ const MonthView = ({
   // to the last Sunday of the last week of the month
   const startDate = startOfWeek(monthStart, { locale: fr, weekStartsOn: 1 });
   const endDate = endOfWeek(monthEnd, { locale: fr, weekStartsOn: 1 });
-  
+
   const monthDays = eachDayOfInterval({ start: startDate, end: endDate });
 
   // Navigation handlers
@@ -48,7 +51,7 @@ const MonthView = ({
     onDateChange(
       newDate,
       startOfWeek(startOfMonth(newDate), { locale: fr, weekStartsOn: 1 }),
-      endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 })
+      endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 }),
     );
   };
 
@@ -58,7 +61,7 @@ const MonthView = ({
     onDateChange(
       newDate,
       startOfWeek(startOfMonth(newDate), { locale: fr, weekStartsOn: 1 }),
-      endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 })
+      endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 }),
     );
   };
 
@@ -68,7 +71,7 @@ const MonthView = ({
       onDateChange(
         newDate,
         startOfWeek(startOfMonth(newDate), { locale: fr, weekStartsOn: 1 }),
-        endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 })
+        endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 }),
       );
     }
   };
@@ -79,7 +82,7 @@ const MonthView = ({
     onDateChange(
       today,
       startOfWeek(startOfMonth(today), { locale: fr, weekStartsOn: 1 }),
-      endOfWeek(endOfMonth(today), { locale: fr, weekStartsOn: 1 })
+      endOfWeek(endOfMonth(today), { locale: fr, weekStartsOn: 1 }),
     );
   };
 
@@ -95,11 +98,11 @@ const MonthView = ({
   const isToday = (day) => isSameDay(day, new Date());
 
   const headerTitle = format(currentDate, "MMMM yyyy", { locale: fr });
-  
+
   // Create an array of 7 days just for the headers (Mon-Sun)
   const weekDayHeaders = eachDayOfInterval({
     start: startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 }),
-    end: endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 })
+    end: endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 }),
   });
 
   return (
@@ -140,8 +143,8 @@ const MonthView = ({
             const today = isToday(day);
 
             return (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`month-cell ${isCurrentMonth ? "" : "out-of-month"} ${today ? "today-cell" : ""}`}
               >
                 <div className="month-cell-header">
@@ -149,26 +152,42 @@ const MonthView = ({
                     {format(day, "d")}
                   </span>
                 </div>
-                
+
                 <div className="month-cell-events">
-                  {dayEvents.map(event => {
+                  {dayEvents.map((event) => {
                     const style = getEventStyle(event, theme);
+                    const missed = isEventMissed(event.id);
+                    const ignored = isEventIgnored(event);
                     return (
                       <div
                         key={event.id}
-                        className="month-event"
+                        className={`month-event ${missed ? "missed" : ""} ${ignored ? "ignored" : ""}`}
                         style={{
                           backgroundColor: style.bg,
                           borderLeftColor: style.border,
-                          color: style.text
+                          color: style.text,
                         }}
                         onClick={(e) => handleEventClick(event, e)}
                         title={event.title}
                       >
-                        <span className="month-event-time">
+                        <span
+                          className="month-event-time"
+                          style={{
+                            textDecoration: missed ? "line-through" : "none",
+                            fontStyle: ignored ? "italic" : "normal",
+                            opacity: ignored ? 0.4 : missed ? 0.6 : 1,
+                          }}
+                        >
                           {format(event.start, "HH:mm")}
                         </span>
-                        <span className="month-event-title">
+                        <span
+                          className="month-event-title"
+                          style={{
+                            textDecoration: missed ? "line-through" : "none",
+                            fontStyle: ignored ? "italic" : "normal",
+                            opacity: ignored ? 0.4 : missed ? 0.6 : 1,
+                          }}
+                        >
                           {event.title}
                         </span>
                       </div>
