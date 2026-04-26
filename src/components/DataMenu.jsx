@@ -29,7 +29,9 @@ const DataMenu = ({ exportEvents = [] }) => {
         data[key] = localStorage.getItem(key);
       }
     }
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -81,7 +83,11 @@ const DataMenu = ({ exportEvents = [] }) => {
   };
 
   const handleClear = () => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer toutes les données de l'extension ?")) {
+    if (
+      window.confirm(
+        "Êtes-vous sûr de vouloir supprimer toutes les données de l'extension ?",
+      )
+    ) {
       const keysToRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -117,16 +123,16 @@ const DataMenu = ({ exportEvents = [] }) => {
           <div className="data-actions-section">
             <button className="btn-data-action" onClick={handleCalendarExport}>
               <Download size={16} />
-              Télécharger le planning (.ics)
+              Télécharger la vue du calendrier (.ics)
             </button>
 
             <button className="btn-data-action" onClick={handleExport}>
               <Download size={16} />
               Exporter les données
             </button>
-            
-            <button 
-              className="btn-data-action" 
+
+            <button
+              className="btn-data-action"
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload size={16} />
