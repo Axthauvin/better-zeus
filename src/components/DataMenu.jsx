@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Database, Download, Upload, Trash2 } from "lucide-react";
 import { createIcsFromEvents, downloadIcsFile } from "../utils/icsExport";
+import { useAttendance } from "../context/AttendanceContext";
 import "./DataMenu.css";
 
 const DataMenu = ({ exportEvents = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
+  const { isEventIgnored, isNonCountableEvent } = useAttendance();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -38,13 +40,17 @@ const DataMenu = ({ exportEvents = [] }) => {
   };
 
   const handleCalendarExport = () => {
-    if (!exportEvents || exportEvents.length === 0) {
+    const exportableEvents = (exportEvents || []).filter(
+      (event) => !isEventIgnored(event) && !isNonCountableEvent(event),
+    );
+
+    if (exportableEvents.length === 0) {
       alert("Aucun événement à exporter pour la vue actuelle.");
       setIsOpen(false);
       return;
     }
 
-    const ics = createIcsFromEvents(exportEvents);
+    const ics = createIcsFromEvents(exportableEvents);
     const dateLabel = new Date().toISOString().split("T")[0];
     downloadIcsFile(ics, `better-zeus-planning-${dateLabel}.ics`);
     setIsOpen(false);
