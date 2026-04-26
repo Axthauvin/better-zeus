@@ -26,6 +26,7 @@ import "../components/DayCalendar.css";
 
 const DayView = ({
   events = [],
+  exportEvents = [],
   currentDate,
   setCurrentDate,
   onDateChange,
@@ -114,6 +115,7 @@ const DayView = ({
       theme={theme}
       onToggleTheme={onToggleTheme}
       onToggleSidebar={onToggleSidebar}
+      exportEvents={exportEvents}
       className="day-calendar"
     >
       {/* Calendar Grid */}
