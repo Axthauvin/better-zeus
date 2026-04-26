@@ -32,6 +32,7 @@ const BaseCalendarLayout = ({
   theme = "light",
   onToggleTheme = () => { },
   onToggleSidebar = () => { },
+  exportEvents = [],
   selectedEvent,
   onCloseModal,
   children,
@@ -68,7 +69,7 @@ const BaseCalendarLayout = ({
               <Menu size={18} />
             </button>
             <PresenceMenu />
-            <DataMenu />
+            <DataMenu exportEvents={exportEvents} />
             <a
               className="btn-icon btn-github"
               href="https://github.com/Axthauvin/better-zeus"

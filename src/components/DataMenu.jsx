@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Database, Download, Upload, Trash2 } from "lucide-react";
+import { createIcsFromEvents, downloadIcsFile } from "../utils/icsExport";
 import "./DataMenu.css";
 
-const DataMenu = () => {
+const DataMenu = ({ exportEvents = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -33,6 +34,19 @@ const DataMenu = () => {
     a.download = `better-zeus-export-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setIsOpen(false);
+  };
+
+  const handleCalendarExport = () => {
+    if (!exportEvents || exportEvents.length === 0) {
+      alert("Aucun événement à exporter pour la vue actuelle.");
+      setIsOpen(false);
+      return;
+    }
+
+    const ics = createIcsFromEvents(exportEvents);
+    const dateLabel = new Date().toISOString().split("T")[0];
+    downloadIcsFile(ics, `better-zeus-planning-${dateLabel}.ics`);
     setIsOpen(false);
   };
 
@@ -95,6 +109,11 @@ const DataMenu = () => {
           </div>
 
           <div className="data-actions-section">
+            <button className="btn-data-action" onClick={handleCalendarExport}>
+              <Download size={16} />
+              Télécharger le planning (.ics)
+            </button>
+
             <button className="btn-data-action" onClick={handleExport}>
               <Download size={16} />
               Exporter les données

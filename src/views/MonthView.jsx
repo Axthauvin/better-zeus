@@ -19,6 +19,7 @@ import { useAttendance } from "../context/AttendanceContext";
 
 const MonthView = ({
   events = [],
+  exportEvents = [],
   currentDate,
   setCurrentDate,
   onDateChange,
@@ -123,6 +124,7 @@ const MonthView = ({
       theme={theme}
       onToggleTheme={onToggleTheme}
       onToggleSidebar={onToggleSidebar}
+      exportEvents={exportEvents}
       className="month-calendar"
     >
       <div className="month-calendar-grid-container">

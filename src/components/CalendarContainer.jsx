@@ -280,6 +280,7 @@ const CalendarContainer = () => {
         {view === "month" ? (
           <MonthView
             events={filteredEvents}
+            exportEvents={filteredEvents}
             onViewChange={handleViewChange}
             onDateChange={handleDateChange}
             currentDate={currentDate}
@@ -294,6 +295,7 @@ const CalendarContainer = () => {
         ) : view === "week" ? (
           <WeekView
             events={filteredEvents}
+            exportEvents={filteredEvents}
             onViewChange={handleViewChange}
             onDateChange={handleDateChange}
             currentDate={currentDate}
@@ -308,6 +310,7 @@ const CalendarContainer = () => {
         ) : (
           <DayView
             events={filteredEvents}
+            exportEvents={filteredEvents}
             onViewChange={handleViewChange}
             onDateChange={handleDateChange}
             currentDate={currentDate}
