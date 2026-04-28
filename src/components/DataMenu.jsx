@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Database, Download, Upload, Trash2 } from "lucide-react";
+import { createIcsFromEvents, downloadIcsFile } from "../utils/icsExport";
+import { useAttendance } from "../context/AttendanceContext";
 import "./DataMenu.css";
 
-const DataMenu = () => {
+const DataMenu = ({ exportEvents = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
+  const { isEventIgnored, isNonCountableEvent } = useAttendance();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -26,13 +29,32 @@ const DataMenu = () => {
         data[key] = localStorage.getItem(key);
       }
     }
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `better-zeus-export-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setIsOpen(false);
+  };
+
+  const handleCalendarExport = () => {
+    const exportableEvents = (exportEvents || []).filter(
+      (event) => !isEventIgnored(event) && !isNonCountableEvent(event),
+    );
+
+    if (exportableEvents.length === 0) {
+      alert("Aucun événement à exporter pour la vue actuelle.");
+      setIsOpen(false);
+      return;
+    }
+
+    const ics = createIcsFromEvents(exportableEvents);
+    const dateLabel = new Date().toISOString().split("T")[0];
+    downloadIcsFile(ics, `better-zeus-planning-${dateLabel}.ics`);
     setIsOpen(false);
   };
 
@@ -61,7 +83,11 @@ const DataMenu = () => {
   };
 
   const handleClear = () => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer toutes les données de l'extension ?")) {
+    if (
+      window.confirm(
+        "Êtes-vous sûr de vouloir supprimer toutes les données de l'extension ?",
+      )
+    ) {
       const keysToRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -95,13 +121,18 @@ const DataMenu = () => {
           </div>
 
           <div className="data-actions-section">
+            <button className="btn-data-action" onClick={handleCalendarExport}>
+              <Download size={16} />
+              Télécharger la vue du calendrier (.ics)
+            </button>
+
             <button className="btn-data-action" onClick={handleExport}>
               <Download size={16} />
               Exporter les données
             </button>
-            
-            <button 
-              className="btn-data-action" 
+
+            <button
+              className="btn-data-action"
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload size={16} />

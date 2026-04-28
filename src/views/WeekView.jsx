@@ -29,6 +29,7 @@ const INITIAL_SCROLL_HOUR = 6;
 
 const WeekView = ({
   events = [],
+  exportEvents = [],
   currentDate,
   setCurrentDate,
   onDateChange,
@@ -140,6 +141,7 @@ const WeekView = ({
       theme={theme}
       onToggleTheme={onToggleTheme}
       onToggleSidebar={onToggleSidebar}
+      exportEvents={exportEvents}
       className="week-calendar"
     >
       {/* Calendar Grid */}
