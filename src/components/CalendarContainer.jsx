@@ -59,6 +59,43 @@ const CalendarContainer = () => {
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const getHighestHierarchyGroup = () => {
+    const groups = getUserGroups();
+    const formattedGroups = groups.map((group) => ({
+      id: group.id || group.value?.id,
+      name: group.name || group.value?.name || "Groupe sans nom",
+      path: group.path || "",
+    }));
+
+    const candidates = formattedGroups.filter(
+      (group) => group.id && group.name !== "0",
+    );
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    const getHierarchyDepth = (groupPath) => {
+      if (!groupPath || typeof groupPath !== "string") return 0;
+      return groupPath.split("/").filter(Boolean).length;
+    };
+
+    return [...candidates].sort((a, b) => {
+      const depthDiff = getHierarchyDepth(a.path) - getHierarchyDepth(b.path);
+      if (depthDiff !== 0) {
+        return depthDiff;
+      }
+      return String(a.name).localeCompare(String(b.name), "fr");
+    })[0];
+  };
+
+  const rootGroup = getHighestHierarchyGroup();
+  const activeGroups = React.useMemo(() => {
+    return selectionMode === "rooms" && rootGroup
+      ? [rootGroup.id]
+      : enabledGroups;
+  }, [selectionMode, enabledGroups, rootGroup?.id]);
+
   useEffect(() => {
     localStorage.setItem("better-zeus-theme", theme);
   }, [theme]);
@@ -102,13 +139,13 @@ const CalendarContainer = () => {
           start = startOfDay(newDate);
           end = endOfDay(newDate);
         }
-        loadEvents(start, end, enabledGroups);
+        loadEvents(start, end, activeGroups);
       }
     };
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [currentDate, enabledGroups]);
+  }, [currentDate, activeGroups]);
 
   // Fetch events from API
   const loadEvents = async (startDate, endDate, groups) => {
@@ -154,8 +191,8 @@ const CalendarContainer = () => {
       startDate = startOfDay(currentDate);
       endDate = endOfDay(currentDate);
     }
-    loadEvents(startDate, endDate, enabledGroups);
-  }, [enabledGroups]);
+    loadEvents(startDate, endDate, activeGroups);
+  }, [activeGroups]);
 
   const handleViewChange = (newView) => {
     setView(newView);
@@ -181,12 +218,12 @@ const CalendarContainer = () => {
     }
 
     // Reload events with the new date range
-    loadEvents(startDate, endDate, enabledGroups);
+    loadEvents(startDate, endDate, activeGroups);
   };
 
   const handleDateChange = (newDate, startDate, endDate) => {
     setCurrentDate(newDate);
-    loadEvents(startDate, endDate, enabledGroups);
+    loadEvents(startDate, endDate, activeGroups);
   };
 
   const handleGroupsChange = (newSelectedGroups) => {
@@ -297,6 +334,7 @@ const CalendarContainer = () => {
 
       <aside className={`sidebar-shell ${isSidebarOpen ? "open" : ""}`}>
         <GroupSelector
+          selectionMode={selectionMode}
           selectedGroups={selectedGroups}
           enabledGroups={enabledGroups}
           onToggleGroupEnabled={handleToggleGroupEnabled}
