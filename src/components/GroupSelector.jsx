@@ -7,11 +7,11 @@ const GroupSelector = ({
   selectedGroups,
   enabledGroups = [],
   onGroupsChange,
-  onToggleGroupEnabled = () => { },
+  onToggleGroupEnabled = () => {},
   availableRooms = [],
   selectedRooms = [],
-  onRoomsChange = () => { },
-  onSelectionModeChange = () => { },
+  onRoomsChange = () => {},
+  onSelectionModeChange = () => {},
 }) => {
   const [allGroups, setAllGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -210,7 +210,7 @@ const GroupSelector = ({
             <i>Better </i>
             {""}Zeus
           </h3>
-          <button className="logout" onClick={logout}>
+          <button className="logout" onClick={logout} type="button">
             <LogOut size={16} color="#667085" />
           </button>
         </div>
@@ -347,8 +347,8 @@ const GroupSelector = ({
           <div className="group-list">
             {selectionMode === "groups" ? (
               unselectedFilteredGroups.length === 0 &&
-                searchQuery === "" &&
-                selectedGroups.length === allGroups.length ? (
+              searchQuery === "" &&
+              selectedGroups.length === allGroups.length ? (
                 <div className="no-groups">
                   <p>Tous les groupes sont selectionnes</p>
                 </div>

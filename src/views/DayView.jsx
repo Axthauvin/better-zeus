@@ -37,6 +37,7 @@ const DayView = ({
   theme,
   onToggleTheme,
   onToggleSidebar,
+  onOpenCalendarExport,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -115,6 +116,7 @@ const DayView = ({
       theme={theme}
       onToggleTheme={onToggleTheme}
       onToggleSidebar={onToggleSidebar}
+      onOpenCalendarExport={onOpenCalendarExport}
       exportEvents={exportEvents}
       className="day-calendar"
     >

@@ -2,7 +2,7 @@ import React from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { MyDayPicker } from "../components/DayPicker";
-import { Search, Sun, Moon, Menu, Github } from "lucide-react";
+import { Search, Sun, Moon, Menu, Github, Calendar } from "lucide-react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -11,6 +11,8 @@ import {
 import EventModal from "../components/EventModal";
 import PresenceMenu from "../components/PresenceMenu";
 import DataMenu from "../components/DataMenu";
+import "../components/WeekCalendar.css";
+import "./BaseCalendarLayout.css";
 
 /**
  * BaseCalendarLayout - Shared layout component for calendar views
@@ -28,10 +30,11 @@ const BaseCalendarLayout = ({
   headerSubtitle,
   monthDay,
   eventSearchQuery = "",
-  onEventSearchQueryChange = () => { },
+  onEventSearchQueryChange = () => {},
   theme = "light",
-  onToggleTheme = () => { },
-  onToggleSidebar = () => { },
+  onToggleTheme = () => {},
+  onToggleSidebar = () => {},
+  onOpenCalendarExport = () => {},
   exportEvents = [],
   selectedEvent,
   onCloseModal,
@@ -69,6 +72,18 @@ const BaseCalendarLayout = ({
               <Menu size={18} />
             </button>
             <PresenceMenu />
+            <button
+              className="btn-calendar-export"
+              onClick={onOpenCalendarExport}
+              aria-label="Ajouter a mon calendrier"
+              title="Ajouter a mon calendrier"
+              type="button"
+            >
+              <Calendar size={16} />
+              <span className="btn-calendar-export-label">
+                Ajouter a mon calendrier
+              </span>
+            </button>
             <DataMenu exportEvents={exportEvents} />
             <a
               className="btn-icon btn-github"

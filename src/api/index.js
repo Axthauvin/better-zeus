@@ -1,6 +1,9 @@
 const API_BASE_URL =
   "https://zeus.ionis-it.com/api/reservation/filter/displayable";
 
+const CALENDAR_EXPORT_PROFILE_URL =
+  "https://zeus.ionis-it.com/api/User/UserProfile";
+
 function getAuth() {
   const token = localStorage.getItem("ZEUS-AUTH");
   if (!token) {
@@ -14,6 +17,53 @@ function getAuth() {
   }
 
   return authenticated.token;
+}
+
+function decodeJwtPayload(jwt) {
+  const parts = String(jwt || "").split(".");
+
+  if (parts.length < 2) {
+    throw new Error("Invalid ZEUS auth token format");
+  }
+
+  const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+  const paddedPayload = payload.padEnd(
+    payload.length + ((4 - (payload.length % 4)) % 4),
+    "=",
+  );
+
+  const decoded = window.atob(paddedPayload);
+  return JSON.parse(decoded);
+}
+
+function getZeusLoginFromAuth() {
+  const token = localStorage.getItem("ZEUS-AUTH");
+  if (!token) {
+    throw new Error("No auth token found");
+  }
+
+  const authenticated = JSON.parse(token);
+  if (!authenticated || !authenticated.isAuthenticated) {
+    throw new Error("User is not authenticated");
+  }
+
+  if (authenticated.login) {
+    return authenticated.login;
+  }
+
+  const jwt = authenticated.token;
+  if (!jwt) {
+    throw new Error("No JWT token available");
+  }
+
+  const payload = decodeJwtPayload(jwt);
+  const login = payload.login || payload.preferred_username || payload.sub;
+
+  if (!login) {
+    throw new Error("Unable to extract user login from ZEUS token");
+  }
+
+  return login;
 }
 
 export async function fetchTimeTable(
@@ -90,7 +140,7 @@ export async function fetchEventsInChunks(groupsId, startDate, endDate) {
     const dayOfWeek = currentEnd.getDay();
     // 0 is Sunday, 1 is Monday... If not Sunday, add days to reach Sunday
     const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
-    
+
     currentEnd.setDate(currentEnd.getDate() + daysUntilSunday);
     currentEnd.setHours(23, 59, 59, 999);
 
@@ -98,7 +148,11 @@ export async function fetchEventsInChunks(groupsId, startDate, endDate) {
       currentEnd = new Date(endDate);
     }
 
-    const chunkEvents = await fetchTimeTable(groupsId, currentStart, currentEnd);
+    const chunkEvents = await fetchTimeTable(
+      groupsId,
+      currentStart,
+      currentEnd,
+    );
     allEvents.push(...chunkEvents);
 
     // Move to next chunk (starts on the following Monday at midnight)
@@ -141,6 +195,45 @@ export async function fetchReservationDetails(reservationId) {
   }
 }
 
+export async function fetchCalendarExportToken() {
+  const login = getZeusLoginFromAuth();
+
+  console.log("Fetching calendar export token for login:", login);
+
+  const authToken = getAuth();
+  if (!authToken) {
+    throw new Error("No auth token available");
+  }
+
+  const response = await fetch(CALENDAR_EXPORT_PROFILE_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/json",
+      Accept: "application/json, text/plain, */*",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+    },
+    body: `"${login}"`,
+  });
+
+  console.log("Calendar export token response:", response);
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  const profile = await response.json();
+  if (!profile?.token) {
+    throw new Error("No export token returned by UserProfile");
+  }
+
+  return profile.token;
+}
+
+export function buildCalendarExportLink(groupId, token) {
+  return `https://zeus.ionis-it.com/api/group/${groupId}/ics/${token}`;
+}
+
 function getColorForEventType(type) {
   const typeColors = {
     "CourseType.Lecture": "#7C3AED",
@@ -171,12 +264,12 @@ export function transformApiDataToEvents(apiData) {
     teacher:
       item.teachers && item.teachers.length > 0
         ? item.teachers
-          .map((t) =>
-            t.firstname && t.name
-              ? `${t.firstname} ${t.name}`
-              : t.name || t.firstname || "",
-          )
-          .join(", ")
+            .map((t) =>
+              t.firstname && t.name
+                ? `${t.firstname} ${t.name}`
+                : t.name || t.firstname || "",
+            )
+            .join(", ")
         : "",
     type: item.typeName || "",
     groups: item.groups ? item.groups.map((g) => g.name) : [],

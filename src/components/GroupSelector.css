@@ -77,6 +77,13 @@
   min-width: 0;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .group-selector-header h3 {
   margin: 0;
   font-size: 18px;
@@ -494,6 +501,26 @@
   transition: all 0.15s ease;
 }
 
+.calendar-export-button {
+  background: none;
+  border: 1px solid #d0d5dd;
+  color: #667085;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.calendar-export-button:hover {
+  background: #f9f5ff;
+  color: #7f56d9;
+  border-color: #cdb4fe;
+}
+
 .logout:hover {
   background: #f9fafb;
   color: #7f56d9;
@@ -509,6 +536,16 @@
 [data-theme="dark"] .selector-mode-tabs {
   background: #0f172a;
   border-bottom-color: #1f2937;
+}
+
+[data-theme="dark"] .calendar-export-button {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .calendar-export-button:hover {
+  background: #1f2937;
+  border-color: #6366f1;
 }
 
 [data-theme="dark"] .header-icon {

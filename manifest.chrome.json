@@ -8,13 +8,8 @@
   "background": {
     "service_worker": "src/background/index.js"
   },
-  "host_permissions": [
-    "https://api.github.com/"
-  ],
-  "permissions": [
-    "storage",
-    "tabs"
-  ],
+  "host_permissions": ["https://api.github.com/"],
+  "permissions": ["storage", "tabs"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },

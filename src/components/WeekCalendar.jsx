@@ -4,6 +4,7 @@ import {
   endOfWeek,
   eachDayOfInterval,
   format,
+  getISOWeek,
   addWeeks,
   subWeeks,
   isSameDay,
@@ -108,10 +109,7 @@ const WeekCalendar = ({
   const isToday = (day) => isSameDay(day, new Date());
 
   const getWeekNumber = () => {
-    const start = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
-    const startOfYear = new Date(start.getFullYear(), 0, 1);
-    const days = Math.floor((start - startOfYear) / (24 * 60 * 60 * 1000));
-    return Math.ceil((days + 1) / 7);
+    return getISOWeek(currentDate);
   };
 
   // Générer des couleurs pastelles avec bordures pour les événements
@@ -208,7 +206,7 @@ const WeekCalendar = ({
             </div>
             <div className="calendar-title-info">
               <h2>{format(currentDate, "MMMM yyyy", { locale: fr })}</h2>
-              <p>Week {getWeekNumber()}</p>
+              <p>Semaine {getWeekNumber()}</p>
               <p className="week-range">
                 {format(weekStart, "d MMM yyyy", { locale: fr })} –{" "}
                 {format(weekEnd, "d MMM yyyy", { locale: fr })}

@@ -4,6 +4,7 @@ import {
   endOfWeek,
   eachDayOfInterval,
   format,
+  getISOWeek,
   addWeeks,
   subWeeks,
   isSameDay,
@@ -40,6 +41,7 @@ const WeekView = ({
   theme,
   onToggleTheme,
   onToggleSidebar,
+  onOpenCalendarExport,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -104,10 +106,7 @@ const WeekView = ({
   const todayIndex = weekDays.findIndex((day) => isToday(day));
 
   const getWeekNumber = () => {
-    const start = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
-    const startOfYear = new Date(start.getFullYear(), 0, 1);
-    const days = Math.floor((start - startOfYear) / (24 * 60 * 60 * 1000));
-    return Math.ceil((days + 1) / 7);
+    return getISOWeek(currentDate);
   };
 
   // Header configuration
@@ -141,6 +140,7 @@ const WeekView = ({
       theme={theme}
       onToggleTheme={onToggleTheme}
       onToggleSidebar={onToggleSidebar}
+      onOpenCalendarExport={onOpenCalendarExport}
       exportEvents={exportEvents}
       className="week-calendar"
     >

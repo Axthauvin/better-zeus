@@ -1,0 +1,177 @@
+.calendar-export-modal {
+  max-width: 720px;
+}
+
+.calendar-export-title-icon {
+  color: #6941c6;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.calendar-export-description {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #475467;
+}
+
+.calendar-export-state,
+.calendar-export-empty {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  border: 1px dashed #d0d5dd;
+  border-radius: 16px;
+  background: #f9fafb;
+  padding: 24px;
+}
+
+.calendar-export-state p,
+.calendar-export-empty p {
+  margin: 0;
+  color: #475467;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.calendar-export-spinner {
+  animation: calendarExportSpin 0.9s linear infinite;
+  color: #6941c6;
+}
+
+@keyframes calendarExportSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.calendar-export-error {
+  border-style: solid;
+  border-color: #fda29b;
+  background: #fff1f0;
+}
+
+.calendar-export-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.calendar-export-card {
+  border: 1px solid #eaecf0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.calendar-export-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.calendar-export-group-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #101828;
+}
+
+.calendar-export-group-id {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #667085;
+}
+
+.calendar-export-copy {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #344054;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.calendar-export-copy:hover {
+  border-color: #cdb4fe;
+  background: #f9f5ff;
+  color: #6941c6;
+}
+
+.calendar-export-link {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  padding: 11px 12px;
+  font-size: 13px;
+  color: #101828;
+  background: #f9fafb;
+  font-family: inherit;
+}
+
+.calendar-export-link:focus {
+  outline: none;
+  border-color: #6941c6;
+  box-shadow: 0 0 0 4px rgba(105, 65, 198, 0.12);
+}
+
+[data-theme="dark"] .calendar-export-description {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .calendar-export-state,
+[data-theme="dark"] .calendar-export-empty {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .calendar-export-state p,
+[data-theme="dark"] .calendar-export-empty p,
+[data-theme="dark"] .calendar-export-group-id {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .calendar-export-card {
+  background: #0f172a;
+  border-color: #1f2937;
+}
+
+[data-theme="dark"] .calendar-export-group-name,
+[data-theme="dark"] .calendar-export-link,
+[data-theme="dark"] .calendar-export-copy {
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .calendar-export-link {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .calendar-export-copy {
+  background: #111827;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .calendar-export-copy:hover {
+  background: #1f2937;
+  border-color: #6366f1;
+  color: #c7d2fe;
+}

@@ -30,6 +30,7 @@ const MonthView = ({
   theme,
   onToggleTheme,
   onToggleSidebar,
+  onOpenCalendarExport,
 }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -124,6 +125,7 @@ const MonthView = ({
       theme={theme}
       onToggleTheme={onToggleTheme}
       onToggleSidebar={onToggleSidebar}
+      onOpenCalendarExport={onOpenCalendarExport}
       exportEvents={exportEvents}
       className="month-calendar"
     >

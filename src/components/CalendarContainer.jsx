@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import GroupSelector from "./GroupSelector";
+import CalendarExportModal from "./CalendarExportModal";
 import UpdateNotifier from "./UpdateNotifier";
 import {
   fetchTimeTable,
   transformApiDataToEvents,
+  getUserGroups,
   getSavedGroups,
   saveSelectedGroups,
   getEnabledGroups,
@@ -44,6 +46,7 @@ const CalendarContainer = () => {
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectionMode, setSelectionMode] = useState("groups");
   const [eventSearchQuery, setEventSearchQuery] = useState("");
+  const [isCalendarExportOpen, setIsCalendarExportOpen] = useState(false);
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("better-zeus-theme");
     if (savedTheme === "light" || savedTheme === "dark") {
@@ -222,6 +225,14 @@ const CalendarContainer = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  const selectedGroupsForExport = getUserGroups()
+    .map((group) => ({
+      id: group.id || group.value?.id,
+      name: group.name || group.value?.name || "Groupe sans nom",
+      path: group.path || "",
+    }))
+    .filter((group) => selectedGroups.includes(group.id));
+
   const handleSelectionModeChange = (newMode) => {
     setSelectionMode(newMode);
     // Clear events to prevent flickering when switching modes
@@ -312,6 +323,7 @@ const CalendarContainer = () => {
             eventSearchQuery={eventSearchQuery}
             onEventSearchQueryChange={setEventSearchQuery}
             onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+            onOpenCalendarExport={() => setIsCalendarExportOpen(true)}
           />
         ) : view === "week" ? (
           <WeekView
@@ -327,6 +339,7 @@ const CalendarContainer = () => {
             eventSearchQuery={eventSearchQuery}
             onEventSearchQueryChange={setEventSearchQuery}
             onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+            onOpenCalendarExport={() => setIsCalendarExportOpen(true)}
           />
         ) : (
           <DayView
@@ -342,6 +355,7 @@ const CalendarContainer = () => {
             eventSearchQuery={eventSearchQuery}
             onEventSearchQueryChange={setEventSearchQuery}
             onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+            onOpenCalendarExport={() => setIsCalendarExportOpen(true)}
           />
         )}
 
@@ -363,6 +377,12 @@ const CalendarContainer = () => {
           </div>
         )}
       </div>
+      {isCalendarExportOpen && (
+        <CalendarExportModal
+          selectedGroups={selectedGroupsForExport}
+          onClose={() => setIsCalendarExportOpen(false)}
+        />
+      )}
       <UpdateNotifier theme={theme} />
     </div>
   );

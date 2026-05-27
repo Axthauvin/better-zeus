@@ -28,7 +28,8 @@ Check the release page and follow the instructions :
 - Daily and weekly view of the calendar, with a clear indication of the current day and week.
 - Colored events based on their type (project, piscine, etc.) for easy identification.
 - Responsive design that adapts to different screen sizes and devices.
-- Selected courses stays even when you refresh the page, so you don't have to select them again.
+- Selected courses stays even when you refresh the page, so **you don't have to select them again**.
+- Export your calendar in iCal format, so you can import it in your favorite calendar app (Google Calendar, Outlook, etc.).
 
 ---
 
@@ -37,6 +38,8 @@ Check the release page and follow the instructions :
 ![Choose the week](./.github/choose-the-week.png)
 
 ![Events](./.github/events.png)
+
+![iCal Export](./.github/ical-export.png)
 
 ## Contributing
 
