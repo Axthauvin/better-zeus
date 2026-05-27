@@ -72,16 +72,25 @@ const CalendarContainer = () => {
 
       let newDate;
       if (e.key === "ArrowLeft") {
-        newDate = view === "month" ? subMonths(currentDate, 1) : subWeeks(currentDate, 1);
+        newDate =
+          view === "month"
+            ? subMonths(currentDate, 1)
+            : subWeeks(currentDate, 1);
       } else if (e.key === "ArrowRight") {
-        newDate = view === "month" ? addMonths(currentDate, 1) : addWeeks(currentDate, 1);
+        newDate =
+          view === "month"
+            ? addMonths(currentDate, 1)
+            : addWeeks(currentDate, 1);
       }
 
       if (newDate) {
         setCurrentDate(newDate);
         let start, end;
         if (view === "month") {
-          start = startOfWeek(startOfMonth(newDate), { locale: fr, weekStartsOn: 1 });
+          start = startOfWeek(startOfMonth(newDate), {
+            locale: fr,
+            weekStartsOn: 1,
+          });
           end = endOfWeek(endOfMonth(newDate), { locale: fr, weekStartsOn: 1 });
         } else if (view === "week") {
           start = startOfWeek(newDate, { locale: fr, weekStartsOn: 1 });
@@ -127,8 +136,14 @@ const CalendarContainer = () => {
   useEffect(() => {
     let startDate, endDate;
     if (view === "month") {
-      startDate = startOfWeek(startOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
-      endDate = endOfWeek(endOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
+      startDate = startOfWeek(startOfMonth(currentDate), {
+        locale: fr,
+        weekStartsOn: 1,
+      });
+      endDate = endOfWeek(endOfMonth(currentDate), {
+        locale: fr,
+        weekStartsOn: 1,
+      });
     } else if (view === "week") {
       startDate = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
       endDate = endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
@@ -146,8 +161,14 @@ const CalendarContainer = () => {
     // Recalculate date range based on the new view
     let startDate, endDate;
     if (newView === "month") {
-      startDate = startOfWeek(startOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
-      endDate = endOfWeek(endOfMonth(currentDate), { locale: fr, weekStartsOn: 1 });
+      startDate = startOfWeek(startOfMonth(currentDate), {
+        locale: fr,
+        weekStartsOn: 1,
+      });
+      endDate = endOfWeek(endOfMonth(currentDate), {
+        locale: fr,
+        weekStartsOn: 1,
+      });
     } else if (newView === "week") {
       startDate = startOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
       endDate = endOfWeek(currentDate, { locale: fr, weekStartsOn: 1 });
@@ -336,7 +357,9 @@ const CalendarContainer = () => {
               fontSize: "13px",
             }}
           >
-            Erreur API : {error}. Affichage des données de test.
+            {error.includes("401")
+              ? "Votre session a expiré. Veuillez raffraichir la page pour vous reconnecter."
+              : `Erreur API : ${error}. Affichage des données de test.`}
           </div>
         )}
       </div>
