@@ -4,6 +4,7 @@ import "./GroupSelector.css";
 import { Search, Trash, Plus, Check, LogOut } from "lucide-react";
 
 const GroupSelector = ({
+  selectionMode,
   selectedGroups,
   enabledGroups = [],
   onGroupsChange,
@@ -16,9 +17,6 @@ const GroupSelector = ({
   const [allGroups, setAllGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectionMode, setSelectionMode] = useState("groups");
-  const [groupsSnapshotBeforeRooms, setGroupsSnapshotBeforeRooms] =
-    useState(null);
 
   const getHierarchyDepth = (groupPath) => {
     if (!groupPath || typeof groupPath !== "string") return 0;
@@ -98,18 +96,8 @@ const GroupSelector = ({
   };
 
   const handleRoomToggle = (roomName) => {
-    const highestHierarchyGroup = getHighestHierarchyGroup();
-    if (
-      highestHierarchyGroup &&
-      (selectedGroups.length !== 1 ||
-        selectedGroups[0] !== highestHierarchyGroup.id)
-    ) {
-      onGroupsChange([highestHierarchyGroup.id]);
-    }
-
     const isSelected = selectedRooms.includes(roomName);
     const newSelectedRooms = isSelected ? [] : [roomName];
-
     onRoomsChange(newSelectedRooms);
   };
 
@@ -117,49 +105,8 @@ const GroupSelector = ({
     if (nextMode === selectionMode) {
       return;
     }
-
-    if (nextMode === "rooms") {
-      setGroupsSnapshotBeforeRooms(selectedGroups);
-      setSelectionMode("rooms");
-      onSelectionModeChange("rooms");
-
-      const highestHierarchyGroup = getHighestHierarchyGroup();
-      if (
-        highestHierarchyGroup &&
-        (selectedGroups.length !== 1 ||
-          selectedGroups[0] !== highestHierarchyGroup.id)
-      ) {
-        onGroupsChange([highestHierarchyGroup.id]);
-      }
-      return;
-    }
-
-    setSelectionMode("groups");
-    onSelectionModeChange("groups");
-
-    if (groupsSnapshotBeforeRooms !== null) {
-      onGroupsChange(groupsSnapshotBeforeRooms);
-    }
+    onSelectionModeChange(nextMode);
   };
-
-  useEffect(() => {
-    if (selectionMode !== "rooms") {
-      return;
-    }
-
-    const highestHierarchyGroup = getHighestHierarchyGroup();
-    if (!highestHierarchyGroup) {
-      return;
-    }
-
-    const alreadySelectedAsRootOnly =
-      selectedGroups.length === 1 &&
-      selectedGroups[0] === highestHierarchyGroup.id;
-
-    if (!alreadySelectedAsRootOnly) {
-      onGroupsChange([highestHierarchyGroup.id]);
-    }
-  }, [selectionMode, allGroups]);
 
   const highestHierarchyGroup = getHighestHierarchyGroup();
 
