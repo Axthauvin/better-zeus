@@ -42,10 +42,27 @@ const WeekView = ({
   onToggleTheme,
   onToggleSidebar,
   onOpenCalendarExport,
+  onCreateEvent,
+  onDeleteEvent,
+  onOpenCreateModal,
+  createModalState,
+  onCloseCreateModal,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const scrollRef = React.useRef(null);
+
+  const handleSlotClick = (day, hour) => {
+    const startHStr = String(hour).padStart(2, "0") + ":00";
+    const endHStr = String((hour + 1) % 24).padStart(2, "0") + ":00";
+    if (onOpenCreateModal) {
+      onOpenCreateModal({
+        date: day,
+        startTime: startHStr,
+        endTime: endHStr,
+      });
+    }
+  };
 
   // Scroll to the initial hour on mount
   React.useEffect(() => {
@@ -142,6 +159,11 @@ const WeekView = ({
       onToggleSidebar={onToggleSidebar}
       onOpenCalendarExport={onOpenCalendarExport}
       exportEvents={exportEvents}
+      onCreateEvent={onCreateEvent}
+      onDeleteEvent={onDeleteEvent}
+      onOpenCreateModal={onOpenCreateModal}
+      createModalState={createModalState}
+      onCloseCreateModal={onCloseCreateModal}
       className="week-calendar"
     >
       {/* Calendar Grid */}
@@ -181,7 +203,13 @@ const WeekView = ({
             {hours.map((hour) => (
               <div key={hour} className="hour-row">
                 {weekDays.map((day, dayIndex) => (
-                  <div key={dayIndex} className="hour-cell"></div>
+                  <div
+                    key={dayIndex}
+                    className="hour-cell"
+                    onClick={() => handleSlotClick(day, hour)}
+                    style={{ cursor: "pointer" }}
+                    title={`Ajouter un événement à ${formatHour(hour)}`}
+                  ></div>
                 ))}
               </div>
             ))}

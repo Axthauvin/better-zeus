@@ -8,18 +8,19 @@ import {
   User,
   Tag,
   Users,
-   UserX,
-   CheckCircle2,
-   Video,
-   ExternalLink,
-   MessageSquare,
- } from "lucide-react";
+  UserX,
+  CheckCircle2,
+  Video,
+  ExternalLink,
+  MessageSquare,
+  Trash2,
+} from "lucide-react";
 import { useAttendance } from "../context/AttendanceContext";
 import "./EventModal.css";
 import { eventTypeDisplay } from "../utils/calendarHelpers";
 import { fetchReservationDetails } from "../api";
 
-const EventModal = ({ event, onClose }) => {
+const EventModal = ({ event, onClose, onDelete }) => {
   const {
     isEventMissed,
     isEventIgnored,
@@ -34,7 +35,7 @@ const EventModal = ({ event, onClose }) => {
 
   useEffect(() => {
     const getDetails = async () => {
-      if (event && event.id) {
+      if (event && event.id && !event.isCustom) {
         setLoadingDetails(true);
         try {
           const data = await fetchReservationDetails(event.id);
@@ -48,7 +49,7 @@ const EventModal = ({ event, onClose }) => {
     };
 
     getDetails();
-  }, [event?.id]);
+  }, [event?.id, event?.isCustom]);
 
   if (!event) return null;
 
@@ -108,10 +109,19 @@ const EventModal = ({ event, onClose }) => {
               className="event-color-indicator"
               style={{ backgroundColor: event.color }}
             ></div>
-            <h2 className="event-modal-title">
-              {event.title}
-              {details?.code && ` (${details.code})`}
-            </h2>
+            <div>
+              {event.isCustom && (
+                <div className="event-custom-badge-wrapper">
+                  <span className="event-custom-badge">
+                    Événement personnalisé
+                  </span>
+                </div>
+              )}
+              <h2 className="event-modal-title">
+                {event.title}
+                {details?.code && ` (${details.code})`}
+              </h2>
+            </div>
           </div>
           <button
             className="event-modal-close"
@@ -169,19 +179,19 @@ const EventModal = ({ event, onClose }) => {
             </div>
           )}
 
-          {details?.url && (
+          {(event.onlineUrl || details?.url) && (
             <div className="event-info-item online-url">
               <Video size={18} className="event-info-icon" />
               <div className="event-info-content">
                 <div className="event-info-label">Lien de connexion</div>
                 <div className="event-info-value">
                   <a
-                    href={details.url}
+                    href={event.onlineUrl || details.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="online-link"
                   >
-                    Rejoindre le cours <ExternalLink size={14} style={{ marginLeft: '4px' }} />
+                    Rejoindre la réunion <ExternalLink size={14} style={{ marginLeft: '4px' }} />
                   </a>
                 </div>
               </div>
@@ -221,57 +231,78 @@ const EventModal = ({ event, onClose }) => {
             </div>
           )}
 
-          <div className="attendance-actions">
-            <button
-              className={`attendance-action ${missed ? "active missed" : ""}`}
-              onClick={() => toggleMissedEvent(event)}
-            >
-              <div className="attendance-action-main">
-                {missed ? (
-                  <UserX size={18} className="attendance-action-icon" />
-                ) : (
-                  <CheckCircle2 size={18} className="attendance-action-icon" />
-                )}
-                <span>{missed ? "Cours marqué absent" : "Marquer absent"}</span>
-              </div>
-              <span className="attendance-state-pill">
-                {missed ? "Actif" : "Off"}
-              </span>
-            </button>
-
-            <button
-              className={`attendance-action ${ignored ? "active ignored" : ""}`}
-              onClick={() => toggleIgnoredEvent(event)}
-            >
-              <div className="attendance-action-main">
-                <CheckCircle2 size={18} className="attendance-action-icon" />
-                <span>
-                  {ignored
-                    ? "Cours ignoré (compensation)"
-                    : "Ignorer ce cours (compensation)"}
+          {!event.isCustom && (
+            <div className="attendance-actions">
+              <button
+                className={`attendance-action ${missed ? "active missed" : ""}`}
+                onClick={() => toggleMissedEvent(event)}
+              >
+                <div className="attendance-action-main">
+                  {missed ? (
+                    <UserX size={18} className="attendance-action-icon" />
+                  ) : (
+                    <CheckCircle2 size={18} className="attendance-action-icon" />
+                  )}
+                  <span>{missed ? "Cours marqué absent" : "Marquer absent"}</span>
+                </div>
+                <span className="attendance-state-pill">
+                  {missed ? "Actif" : "Off"}
                 </span>
-              </div>
-              <span className="attendance-state-pill">
-                {ignored ? "Actif" : "Off"}
-              </span>
-            </button>
+              </button>
 
-            <button
-              className={`attendance-action ${nonCountable ? "active non-countable" : ""}`}
-              onClick={() => toggleNonCountableEvent(event)}
-            >
-              <div className="attendance-action-main">
-                <CheckCircle2 size={18} className="attendance-action-icon" />
-                <span>Ne compte pas dans la présence</span>
-              </div>
-              <span className="attendance-state-pill">
-                {nonCountable ? "Actif" : "Off"}
-              </span>
-            </button>
-          </div>
+              <button
+                className={`attendance-action ${ignored ? "active ignored" : ""}`}
+                onClick={() => toggleIgnoredEvent(event)}
+              >
+                <div className="attendance-action-main">
+                  <CheckCircle2 size={18} className="attendance-action-icon" />
+                  <span>
+                    {ignored
+                      ? "Cours ignoré (compensation)"
+                      : "Ignorer ce cours (compensation)"}
+                  </span>
+                </div>
+                <span className="attendance-state-pill">
+                  {ignored ? "Actif" : "Off"}
+                </span>
+              </button>
+
+              <button
+                className={`attendance-action ${nonCountable ? "active non-countable" : ""}`}
+                onClick={() => toggleNonCountableEvent(event)}
+              >
+                <div className="attendance-action-main">
+                  <CheckCircle2 size={18} className="attendance-action-icon" />
+                  <span>Ne compte pas dans la présence</span>
+                </div>
+                <span className="attendance-state-pill">
+                  {nonCountable ? "Actif" : "Off"}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="event-modal-footer">
+          {event.isCustom && onDelete && (
+            <button
+              type="button"
+              className="btn-modal-danger"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Êtes-vous sûr de vouloir supprimer cet événement personnalisé ?",
+                  )
+                ) {
+                  onDelete(event.id);
+                  onClose();
+                }
+              }}
+            >
+              <Trash2 size={16} />
+              Supprimer l'événement
+            </button>
+          )}
           <button className="btn-modal-secondary" onClick={onClose}>
             Fermer
           </button>

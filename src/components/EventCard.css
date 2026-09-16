@@ -22,6 +22,51 @@
   border-left-style: dashed;
 }
 
+.event-card.custom-event {
+  border-left-style: dashed;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.event-card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.custom-badge-icon {
+  margin-right: 4px;
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+
+.custom-event-pill-tag {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+[data-theme="dark"] .event-card.custom-event {
+  border-right-color: rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .custom-event-pill-tag {
+  background: rgba(255, 255, 255, 0.18);
+}
+
 .event-card.missed::after {
   content: "Absent";
   position: absolute;

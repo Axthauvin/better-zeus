@@ -2,13 +2,14 @@ import React from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { MyDayPicker } from "../components/DayPicker";
-import { Search, Sun, Moon, Menu, Github, Calendar } from "lucide-react";
+import { Search, Sun, Moon, Menu, Github, Calendar, Plus } from "lucide-react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronDownIcon,
 } from "../components/CalendarIcons";
 import EventModal from "../components/EventModal";
+import CreateEventModal from "../components/CreateEventModal";
 import PresenceMenu from "../components/PresenceMenu";
 import DataMenu from "../components/DataMenu";
 import "../components/WeekCalendar.css";
@@ -38,9 +39,15 @@ const BaseCalendarLayout = ({
   exportEvents = [],
   selectedEvent,
   onCloseModal,
+  onCreateEvent,
+  onDeleteEvent,
+  onOpenCreateModal,
+  createModalState,
+  onCloseCreateModal,
   children,
   className = "",
 }) => {
+  const [internalCreateModalOpen, setInternalCreateModalOpen] = React.useState(false);
   return (
     <div className={`calendar-view ${className}`}>
       <div className="calendar-header">
@@ -72,6 +79,22 @@ const BaseCalendarLayout = ({
               <Menu size={18} />
             </button>
             <PresenceMenu />
+            <button
+              className="btn-add-event"
+              onClick={() => {
+                if (onOpenCreateModal) {
+                  onOpenCreateModal({ date: currentDate });
+                } else {
+                  setInternalCreateModalOpen(true);
+                }
+              }}
+              aria-label="Ajouter un événement"
+              title="Ajouter un événement"
+              type="button"
+            >
+              <Plus size={16} />
+              <span className="btn-add-event-label">Événement</span>
+            </button>
             <button
               className="btn-calendar-export"
               onClick={onOpenCalendarExport}
@@ -175,7 +198,29 @@ const BaseCalendarLayout = ({
       {children}
 
       {selectedEvent && (
-        <EventModal event={selectedEvent} onClose={onCloseModal} />
+        <EventModal
+          event={selectedEvent}
+          onClose={onCloseModal}
+          onDelete={onDeleteEvent}
+        />
+      )}
+
+      {createModalState ? (
+        <CreateEventModal
+          isOpen={createModalState.isOpen}
+          onClose={onCloseCreateModal}
+          onSubmit={onCreateEvent}
+          initialDate={createModalState.date || currentDate}
+          initialStartTime={createModalState.startTime}
+          initialEndTime={createModalState.endTime}
+        />
+      ) : (
+        <CreateEventModal
+          isOpen={internalCreateModalOpen}
+          onClose={() => setInternalCreateModalOpen(false)}
+          onSubmit={onCreateEvent}
+          initialDate={currentDate}
+        />
       )}
     </div>
   );

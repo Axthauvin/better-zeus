@@ -20,7 +20,7 @@ const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
 
   return (
     <div
-      className={`event-card ${compact ? "compact" : ""} ${!hasTitle ? "no-title" : ""} ${duration < 40 ? "small" : ""} ${missed ? "missed" : ""}`}
+      className={`event-card ${compact ? "compact" : ""} ${event.isCustom ? "custom-event" : ""} ${!hasTitle ? "no-title" : ""} ${duration < 40 ? "small" : ""} ${missed ? "missed" : ""}`}
       style={{ ...eventStyle, opacity: ignored ? 0.4 : missed ? 0.6 : 1 }}
       onClick={handleClick}
     >
@@ -50,12 +50,17 @@ const EventCard = ({ event, eventStyle, onClick, compact = false }) => {
         ) : (
           /* Pour les événements plus longs, afficher toutes les infos */
           <>
-            {hasTitle && (
-              <div className="event-card-title">
-                {event.isOnline && <Video size={14} className="online-badge-icon" />}
-                {event.title}
-              </div>
-            )}
+            <div className="event-card-header-row">
+              {hasTitle && (
+                <div className="event-card-title">
+                  {event.isOnline && <Video size={14} className="online-badge-icon" />}
+                  {event.title}
+                </div>
+              )}
+              {event.isCustom && (
+                <span className="custom-event-pill-tag">Perso</span>
+              )}
+            </div>
 
             <div className="event-card-time">
               {format(event.start, "HH:mm")} - {format(event.end, "HH:mm")}

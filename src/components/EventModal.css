@@ -239,6 +239,63 @@
   background: #f2f4f7;
 }
 
+.btn-modal-danger {
+  padding: 10px 16px;
+  border: 1px solid #fda29b;
+  background: #fef3f2;
+  color: #b42318;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-danger:hover {
+  background: #fee4e2;
+  border-color: #f04438;
+}
+
+[data-theme="dark"] .btn-modal-danger {
+  background: rgba(180, 35, 24, 0.2);
+  border-color: rgba(240, 68, 56, 0.4);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .btn-modal-danger:hover {
+  background: rgba(180, 35, 24, 0.35);
+  border-color: #f04438;
+}
+
+.event-custom-badge-wrapper {
+  margin-bottom: 4px;
+}
+
+.event-custom-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f4ebff;
+  color: #7f56d9;
+  border: 1px solid #e9d7fe;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+[data-theme="dark"] .event-custom-badge {
+  background: rgba(127, 86, 217, 0.2);
+  color: #d6bbfb;
+  border-color: rgba(127, 86, 217, 0.35);
+}
+
 .attendance-actions {
   margin-top: 16px;
   display: grid;
