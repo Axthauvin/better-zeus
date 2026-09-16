@@ -31,11 +31,17 @@ import BaseCalendarLayout from "../views/BaseCalendarLayout";
 import WeekView from "../views/WeekView";
 import DayView from "../views/DayView";
 import MonthView from "../views/MonthView"; // <-- Added MonthView
+import {
+  getCustomEvents,
+  saveCustomEvent,
+  deleteCustomEvent,
+} from "../utils/customEvents";
 import "./CalendarContainer.css";
 
 const CalendarContainer = () => {
   const [view, setView] = useState(getSavedView());
   const [events, setEvents] = useState([]);
+  const [customEvents, setCustomEvents] = useState(() => getCustomEvents());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -276,16 +282,20 @@ const CalendarContainer = () => {
     setEvents([]);
   };
 
+  const allCombinedEvents = React.useMemo(() => {
+    return [...events, ...customEvents];
+  }, [events, customEvents]);
+
   const availableRooms = Array.from(
     new Set(
-      events
+      allCombinedEvents
         .flatMap((event) => event.rooms || [])
         .map((room) => room?.name)
         .filter(Boolean),
     ),
   ).sort((a, b) => a.localeCompare(b, "fr"));
 
-  const filteredEvents = events.filter((event) => {
+  const filteredEvents = allCombinedEvents.filter((event) => {
     const roomFilterEnabled = selectionMode === "rooms";
     const hasSelectedRoom = selectedRooms.length > 0;
 
@@ -321,6 +331,36 @@ const CalendarContainer = () => {
         .includes(query),
     );
   });
+
+  const [createModalState, setCreateModalState] = useState({
+    isOpen: false,
+    date: null,
+    startTime: null,
+    endTime: null,
+  });
+
+  const handleOpenCreateModal = ({ date, startTime, endTime } = {}) => {
+    setCreateModalState({
+      isOpen: true,
+      date: date || currentDate,
+      startTime: startTime || null,
+      endTime: endTime || null,
+    });
+  };
+
+  const handleCloseCreateModal = () => {
+    setCreateModalState((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const handleCreateCustomEvent = (eventData) => {
+    saveCustomEvent(eventData);
+    setCustomEvents(getCustomEvents());
+  };
+
+  const handleDeleteCustomEvent = (eventId) => {
+    deleteCustomEvent(eventId);
+    setCustomEvents(getCustomEvents());
+  };
 
   return (
     <div
@@ -362,6 +402,11 @@ const CalendarContainer = () => {
             onEventSearchQueryChange={setEventSearchQuery}
             onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
             onOpenCalendarExport={() => setIsCalendarExportOpen(true)}
+            onCreateEvent={handleCreateCustomEvent}
+            onDeleteEvent={handleDeleteCustomEvent}
+            onOpenCreateModal={handleOpenCreateModal}
+            createModalState={createModalState}
+            onCloseCreateModal={handleCloseCreateModal}
           />
         ) : view === "week" ? (
           <WeekView
@@ -378,6 +423,11 @@ const CalendarContainer = () => {
             onEventSearchQueryChange={setEventSearchQuery}
             onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
             onOpenCalendarExport={() => setIsCalendarExportOpen(true)}
+            onCreateEvent={handleCreateCustomEvent}
+            onDeleteEvent={handleDeleteCustomEvent}
+            onOpenCreateModal={handleOpenCreateModal}
+            createModalState={createModalState}
+            onCloseCreateModal={handleCloseCreateModal}
           />
         ) : (
           <DayView
@@ -394,6 +444,11 @@ const CalendarContainer = () => {
             onEventSearchQueryChange={setEventSearchQuery}
             onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
             onOpenCalendarExport={() => setIsCalendarExportOpen(true)}
+            onCreateEvent={handleCreateCustomEvent}
+            onDeleteEvent={handleDeleteCustomEvent}
+            onOpenCreateModal={handleOpenCreateModal}
+            createModalState={createModalState}
+            onCloseCreateModal={handleCloseCreateModal}
           />
         )}
 

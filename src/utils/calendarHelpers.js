@@ -5,16 +5,46 @@ import {
   DEFAULT_EVENT_STYLE,
 } from "./calendarConstants.js";
 
+function hexToRgba(hex, alpha = 0.12) {
+  if (!hex || typeof hex !== "string" || !hex.startsWith("#")) {
+    return `rgba(124, 58, 237, ${alpha})`;
+  }
+  let c = hex.substring(1);
+  if (c.length === 3) {
+    c = c
+      .split("")
+      .map((x) => x + x)
+      .join("");
+  }
+  const num = parseInt(c, 16);
+  if (isNaN(num)) return `rgba(124, 58, 237, ${alpha})`;
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 /**
  * Get event style based on event color
  */
 export const getEventStyle = (event, theme = "light") => {
-  const style = EVENT_COLOR_MAP[event.color] || DEFAULT_EVENT_STYLE;
+  let style = EVENT_COLOR_MAP[event.color];
+  if (!style && event.color) {
+    style = {
+      bg: hexToRgba(event.color, 0.12),
+      border: event.color,
+      text: event.color,
+    };
+  }
+  style = style || DEFAULT_EVENT_STYLE;
+
   if (theme === "dark") {
     return {
       ...style,
       // More opaque background in dark mode for better separation
-      bg: style.bg.replace("0.12", "0.2"),
+      bg: style.bg
+        ? style.bg.replace("0.12", "0.22")
+        : hexToRgba(event.color, 0.22),
       // Always white/light text in dark mode for contrast
       text: "#FFFFFF",
     };

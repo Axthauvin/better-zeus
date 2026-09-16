@@ -38,10 +38,27 @@ const DayView = ({
   onToggleTheme,
   onToggleSidebar,
   onOpenCalendarExport,
+  onCreateEvent,
+  onDeleteEvent,
+  onOpenCreateModal,
+  createModalState,
+  onCloseCreateModal,
 }) => {
   const currentTime = useCurrentTime();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const scrollRef = React.useRef(null);
+
+  const handleSlotClick = (hour) => {
+    const startHStr = String(hour).padStart(2, "0") + ":00";
+    const endHStr = String((hour + 1) % 24).padStart(2, "0") + ":00";
+    if (onOpenCreateModal) {
+      onOpenCreateModal({
+        date: currentDate,
+        startTime: startHStr,
+        endTime: endHStr,
+      });
+    }
+  };
 
   // Scroll to default hour (configurable, defaults to 6am) on mount
   React.useEffect(() => {
@@ -118,6 +135,11 @@ const DayView = ({
       onToggleSidebar={onToggleSidebar}
       onOpenCalendarExport={onOpenCalendarExport}
       exportEvents={exportEvents}
+      onCreateEvent={onCreateEvent}
+      onDeleteEvent={onDeleteEvent}
+      onOpenCreateModal={onOpenCreateModal}
+      createModalState={createModalState}
+      onCloseCreateModal={onCloseCreateModal}
       className="day-calendar"
     >
       {/* Calendar Grid */}
@@ -152,7 +174,13 @@ const DayView = ({
           {/* Hour grid */}
           <div className="hour-grid-day">
             {hours.map((hour) => (
-              <div key={hour} className="hour-row-day"></div>
+              <div
+                key={hour}
+                className="hour-row-day"
+                onClick={() => handleSlotClick(hour)}
+                style={{ cursor: "pointer" }}
+                title={`Ajouter un événement à ${formatHour(hour)}`}
+              ></div>
             ))}
           </div>
 

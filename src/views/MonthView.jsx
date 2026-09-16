@@ -31,8 +31,23 @@ const MonthView = ({
   onToggleTheme,
   onToggleSidebar,
   onOpenCalendarExport,
+  onCreateEvent,
+  onDeleteEvent,
+  onOpenCreateModal,
+  createModalState,
+  onCloseCreateModal,
 }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const handleCellClick = (day) => {
+    if (onOpenCreateModal) {
+      onOpenCreateModal({
+        date: day,
+        startTime: "09:00",
+        endTime: "10:00",
+      });
+    }
+  };
 
   const { isEventMissed, isEventIgnored } = useAttendance();
 
@@ -127,6 +142,11 @@ const MonthView = ({
       onToggleSidebar={onToggleSidebar}
       onOpenCalendarExport={onOpenCalendarExport}
       exportEvents={exportEvents}
+      onCreateEvent={onCreateEvent}
+      onDeleteEvent={onDeleteEvent}
+      onOpenCreateModal={onOpenCreateModal}
+      createModalState={createModalState}
+      onCloseCreateModal={onCloseCreateModal}
       className="month-calendar"
     >
       <div className="month-calendar-grid-container">
@@ -150,6 +170,9 @@ const MonthView = ({
               <div
                 key={i}
                 className={`month-cell ${isCurrentMonth ? "" : "out-of-month"} ${today ? "today-cell" : ""}`}
+                onClick={() => handleCellClick(day)}
+                style={{ cursor: "pointer" }}
+                title={`Ajouter un événement le ${format(day, "d MMMM", { locale: fr })}`}
               >
                 <div className="month-cell-header">
                   <span className={`month-day-number ${today ? "today" : ""}`}>
@@ -165,7 +188,7 @@ const MonthView = ({
                     return (
                       <div
                         key={event.id}
-                        className={`month-event ${missed ? "missed" : ""} ${ignored ? "ignored" : ""}`}
+                        className={`month-event ${event.isCustom ? "custom-event" : ""} ${missed ? "missed" : ""} ${ignored ? "ignored" : ""}`}
                         style={{
                           backgroundColor: style.bg,
                           borderLeftColor: style.border,

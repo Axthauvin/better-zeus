@@ -107,6 +107,15 @@
   opacity: 0.9;
 }
 
+.month-event.custom-event {
+  border-left-style: dashed;
+}
+
+.month-custom-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
 .month-event-time {
   font-weight: 600;
   flex-shrink: 0;
