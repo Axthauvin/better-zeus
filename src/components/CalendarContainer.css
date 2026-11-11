@@ -25,6 +25,20 @@
   display: none;
 }
 
+@media (min-width: 981px) {
+  .sidebar-shell {
+    overflow: hidden;
+    transition:
+      flex-basis 0.22s ease,
+      width 0.22s ease;
+  }
+
+  .calendar-container.sidebar-collapsed .sidebar-shell {
+    width: 0;
+    flex-basis: 0;
+  }
+}
+
 @media (max-width: 980px) {
   .sidebar-shell {
     position: fixed;

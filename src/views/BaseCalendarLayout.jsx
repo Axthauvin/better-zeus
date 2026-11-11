@@ -54,13 +54,23 @@ const BaseCalendarLayout = ({
         <div className="calendar-header-main">
           <div className="calendar-header-left">
             <div className="calendar-date-info">
-              <div className="calendar-month-day">
-                <span className="month-label">
-                  {format(currentDate, "MMM", { locale: fr }).toUpperCase()}
-                </span>
-                <span className="day-number">
-                  {monthDay || format(currentDate, "d")}
-                </span>
+              <div className="calendar-date-badges">
+                <button
+                  className="btn-icon btn-sidebar-toggle"
+                  onClick={onToggleSidebar}
+                  aria-label="Afficher/masquer le menu"
+                  title="Menu"
+                >
+                  <Menu size={18} />
+                </button>
+                <div className="calendar-month-day">
+                  <span className="month-label">
+                    {format(currentDate, "MMM", { locale: fr }).toUpperCase()}
+                  </span>
+                  <span className="day-number">
+                    {monthDay || format(currentDate, "d")}
+                  </span>
+                </div>
               </div>
               <div className="calendar-title-info">
                 <h2>{headerTitle}</h2>
@@ -70,14 +80,6 @@ const BaseCalendarLayout = ({
           </div>
 
           <div className="calendar-header-right">
-            <button
-              className="btn-icon btn-sidebar-toggle"
-              onClick={onToggleSidebar}
-              aria-label="Ouvrir le menu"
-              title="Menu"
-            >
-              <Menu size={18} />
-            </button>
             <PresenceMenu />
             <button
               className="btn-add-event"

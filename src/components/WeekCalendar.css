@@ -59,6 +59,19 @@ body {
   align-items: center;
 }
 
+/* Grille à colonnes égales : le bouton menu prend la taille du badge date */
+.calendar-date-badges {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 12px;
+}
+
+.calendar-date-badges .btn-sidebar-toggle {
+  width: auto;
+  height: auto;
+}
+
 .calendar-month-day {
   display: flex;
   flex-direction: column;
@@ -156,10 +169,6 @@ body {
 .btn-github:hover {
   background: #f3f4f6;
   border-color: #9ca3af;
-}
-
-.calendar-header-right .btn-icon.btn-sidebar-toggle {
-  display: none !important;
 }
 
 .btn-theme:hover {
@@ -737,12 +746,6 @@ body {
   .view-menu {
     right: auto;
     left: 0;
-  }
-}
-
-@media (max-width: 980px) {
-  .calendar-header-right .btn-icon.btn-sidebar-toggle {
-    display: inline-flex !important;
   }
 }
 
